@@ -1,0 +1,206 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width" />
+    <title>Взвешивания</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.0/css/bootstrap.min.css" rel="stylesheet" />
+</head>
+<body>
+    <form name="weighingForm">
+        <input type="hidden" name="idWeighing" value="0" />
+        <div class="form-group col-md-5">
+            <label for="item">Предмет:</label>
+            <input class="form-control" name="item" />
+        </div>
+        <div class="form-group col-md-5">
+            <label for="weight">Вес:</label>
+            <input class="form-control" name="weight" type="number" />
+        </div>
+        <div class="form-group col-md-5">
+            <label for="measure">Ед. измерения:</label>
+            <input class="form-control" name="measure" />
+        </div>
+        <div class="form-group col-md-5">
+            <label for="tareType">Тип тары:</label>
+            <input class="form-control" name="tareType" />
+        </div>
+        <div class="panel-body">
+            <button type="submit" id="submit" class="btn btn-primary">Сохранить</button>
+            <a id="reset" class="btn btn-primary">Сбросить</a>
+        </div>
+    </form>
+    <table class="table table-condensed table-striped  col-md-6">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Предмет</th>
+                <th>Вес</th>
+                <th>Ед. измерения</th>
+                <th>Тип тары</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+        </tbody>
+    </table>
+
+    <script>
+        async function GetWeighings() {
+            const response = await fetch("/api/weighings", {
+                method: "GET",
+                headers: { "Accept": "application/json" }
+            });
+            if (response.ok === true) {
+                const weighings = await response.json();
+                let rows = document.querySelector("tbody");
+                weighings.forEach(weighing => {
+                    rows.append(row(weighing));
+                });
+            }
+        }
+        async function GetWeighing(id) {
+            const response = await fetch("/api/weighings/" + id, {
+                method: "GET",
+                headers: { "Accept": "application/json" }
+            });
+            if (response.ok === true) {
+                const weighing = await response.json();
+                const form = document.forms["weighingForm"];
+                form.elements["idWeighing"].value = weighing.idWeighing;
+                form.elements["item"].value = weighing.item;
+                form.elements["weight"].value = weighing.weight;
+                form.elements["measure"].value = weighing.measure;
+                form.elements["tareType"].value = weighing.tareType;
+            }
+        }
+        async function CreateWeighing(weighingItem, weighingWeight, weighingMeasure, weighingTareType) {
+
+            const response = await fetch("api/weighings", {
+                method: "POST",
+                headers: { "Accept": "application/json", "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    item: weighingItem,
+                    weight: parseInt(weighingWeight, 10),
+                    measure: weighingMeasure,
+                    tareType: weighingTareType
+                })
+            });
+            if (response.ok === true) {
+                const weighing = await response.json();
+                reset();
+                document.querySelector("tbody").append(row(weighing));
+            }
+        }
+        async function EditWeighing(weighingID, weighingItem, weighingWeight, weighingMeasure, weighingTareType) {
+            const response = await fetch("api/weighings", {
+                method: "PUT",
+                headers: { "Accept": "application/json", "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    idWeighing: parseInt(weighingID, 10),
+                    item: weighingItem,
+                    weight: parseInt(weighingWeight, 10),
+                    measure: weighingMeasure,
+                    tareType: weighingTareType
+                })
+            });
+            if (response.ok === true) {
+                const weighing = await response.json();
+                reset();
+                document.querySelector("tr[data-rowid='" + weighings.idWeighing + "']").replaceWith(row(weighing));
+            }
+        }
+
+        async function DeleteWeighing(id) {
+            const response = await fetch("/api/weighings/" + id, {
+                method: "DELETE",
+                headers: { "Accept": "application/json" }
+            });
+            if (response.ok === true) {
+                const weighing = await response.json();
+                document.querySelector("tr[data-rowid='" + weighing.idWeighing + "']").remove();
+            }
+        }
+
+        function reset() {
+            const form = document.forms["weighingForm"];
+            form.reset();
+            form.elements["idWeighing"].value = 0;
+        }
+
+        function row(weighing) {
+
+            const tr = document.createElement("tr");
+            tr.setAttribute("data-rowid", weighing.idWeighing);
+
+            const idTd = document.createElement("td");
+            idTd.append(weighing.idWeighing);
+            tr.append(idTd);
+
+            const ItemTd = document.createElement("td");
+            ItemTd.append(weighing.item);
+            tr.append(ItemTd);
+
+            const WeightTd = document.createElement("td");
+            WeightTd.append(weighing.weight);
+            tr.append(WeightTd);
+
+            const MeasureTd = document.createElement("td");
+            MeasureTd.append(weighing.measure);
+            tr.append(MeasureTd);
+
+            const TareTypeTd = document.createElement("td");
+            TareTypeTd.append(weighing.tareType);
+            tr.append(TareTypeTd);
+
+            const linksTd = document.createElement("td");
+
+            const editLink = document.createElement("a");
+            editLink.setAttribute("data-id", weighing.idWeighing);
+            editLink.setAttribute("style", "cursor:pointer;padding:15px;");
+            editLink.append("Изменить");
+            editLink.addEventListener("click", e => {
+
+                e.preventDefault();
+                GetWeighing(weighing.idWeighing);
+            });
+            linksTd.append(editLink);
+
+            const removeLink = document.createElement("a");
+            removeLink.setAttribute("data-id", weighing.idWeighing);
+            removeLink.setAttribute("style", "cursor:pointer;padding:15px;");
+            removeLink.append("Удалить");
+            removeLink.addEventListener("click", e => {
+
+                e.preventDefault();
+                DeleteWeighing(weighing.idWeighing);
+            });
+
+            linksTd.append(removeLink);
+            tr.appendChild(linksTd);
+
+            return tr;
+        }
+        document.getElementById("reset").click(function (e) {
+            e.preventDefault();
+            reset();
+        })
+
+        document.forms["weighingForm"].addEventListener("submit", e => {
+            e.preventDefault();
+            const form = document.forms["weighingForm"];
+            const id = form.elements["idWeighing"].value;
+            const Item = form.elements["item"].value;
+            const Weight = form.elements["weight"].value;
+            const Measure = form.elements["measure"].value;
+            const TareType = form.elements["tareType"].value;
+            if (id == 0)
+                CreateWeighing(Item, Weight, Measure, TareType);
+            else
+                EditWeighing(id, Item, Weight, Measure, TareType);
+        });
+        GetWeighings();
+    </script>
+
+</body>
+</html>

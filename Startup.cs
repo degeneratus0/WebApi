@@ -36,6 +36,8 @@ namespace WebApi
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             app.UseDeveloperExceptionPage();
+            app.UseDefaultFiles();
+            app.UseStaticFiles();
             //app.UseHttpsRedirection();
             app.UseRouting();
             //app.UseAuthorization();
