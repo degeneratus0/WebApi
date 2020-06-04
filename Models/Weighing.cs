@@ -12,7 +12,5 @@ namespace WebApi.Models
         public int Weight { get; set; }
         public string Measure { get; set; }
         public string TareType { get; set; }
-        //public int? idMeasure { get; set; }
-        //public int? idTareType { get; set; }
     }
 }

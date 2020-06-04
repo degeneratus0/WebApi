@@ -9,8 +9,6 @@ namespace WebApi.Models
     public class WeighingsContext : DbContext
     {
         public DbSet<Weighing> Weighings { get; set; }
-        //public DbSet<Measures> Measures { get; set; }
-        //public DbSet<TareTypes> TareTypes { get; set; }
         public WeighingsContext(DbContextOptions<WeighingsContext> options) 
             : base(options)
         {
