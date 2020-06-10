@@ -13,6 +13,7 @@ using WebApi.Models;
 
 namespace WebApi.Controllers
 {
+    [Produces("application/json")]
     [Route("api/[controller]")]
     [ApiController]
     public class WeighingsController : ControllerBase
@@ -23,18 +24,23 @@ namespace WebApi.Controllers
             db = context;
             if (!db.Weighings.Any())
             {
-                db.Weighings.Add(new Weighing { Item = "Кирпич", Weight = 2, Measure = "кг", TareType = "Без тары"});
-                db.Weighings.Add(new Weighing { Item = "Молоко", Weight = 500, Measure = "г", TareType = "Стакан" });
+                db.Weighings.Add(new Weighing { Item = "Сок", Weight = 200, Measure = "г", TareType = "Коробка" });
+                db.Weighings.Add(new Weighing { Item = "Лимонад", Weight = 1000, Measure = "г", TareType = "Бутылка" });
                 db.SaveChanges();
             }
         }
+        /// <summary>
+        /// Возвращает все записи
+        /// </summary>
         // GET: api/<WeighingsController>
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Weighing>>> Get()
         {
             return await db.Weighings.ToListAsync();
         }
-
+        /// <summary>
+        /// Возвращает определённую запись
+        /// </summary>
         // GET api/<WeighingsController>/5
         [HttpGet("{id}")]
         public async Task<ActionResult<Weighing>> Get(int id)
@@ -44,7 +50,9 @@ namespace WebApi.Controllers
                 return NotFound();
             return new ObjectResult(weighing);
         }
-
+        /// <summary>
+        /// Добавляет запись
+        /// </summary>
         // POST api/<WeighingsController>
         [HttpPost]
         public async Task<ActionResult<Weighing>> Post(Weighing weighing)
@@ -57,7 +65,9 @@ namespace WebApi.Controllers
             await db.SaveChangesAsync();
             return Ok(weighing);
         }
-
+        /// <summary>
+        /// Изменяет определённую запись
+        /// </summary>
         // PUT api/<WeighingsController>/5
         [HttpPut("{id}")]
         public async Task<ActionResult<Weighing>> Put(Weighing weighing)
@@ -74,7 +84,9 @@ namespace WebApi.Controllers
             await db.SaveChangesAsync();
             return Ok(weighing);
         }
-
+        /// <summary>
+        /// Удаляет определённую запись
+        /// </summary>
         // DELETE api/<WeighingsController>/5
         [HttpDelete("{id}")]
         public async Task<ActionResult<Weighing>> Delete(int id)
