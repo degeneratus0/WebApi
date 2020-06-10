@@ -3,10 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Internal;
 using Microsoft.Extensions.FileProviders;
+using Microsoft.OpenApi.Models;
 using WebApi.Models;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
@@ -53,6 +55,17 @@ namespace WebApi.Controllers
         /// <summary>
         /// Добавляет запись
         /// </summary>
+        /// <remarks>
+        /// Пример запроса:
+        ///
+        ///     {
+        ///        "item": "string",
+        ///        "weight": int,
+        ///        "measure": "string"
+        ///        "tareType": "string"
+        ///     }
+        ///
+        /// </remarks>
         // POST api/<WeighingsController>
         [HttpPost]
         public async Task<ActionResult<Weighing>> Post(Weighing weighing)
@@ -76,7 +89,7 @@ namespace WebApi.Controllers
             {
                 return BadRequest();
             }
-            if(!db.Weighings.Any(x => x.IDWeighing == weighing.IDWeighing))
+            if (!db.Weighings.Any(x => x.IDWeighing == weighing.IDWeighing))
             {
                 return NotFound();
             }
@@ -87,7 +100,9 @@ namespace WebApi.Controllers
         /// <summary>
         /// Удаляет определённую запись
         /// </summary>
+        /// <response code="204">Запись удалена</response>  
         // DELETE api/<WeighingsController>/5
+        [ProducesResponseType(StatusCodes.Status204NoContent)]        
         [HttpDelete("{id}")]
         public async Task<ActionResult<Weighing>> Delete(int id)
         {
@@ -98,7 +113,7 @@ namespace WebApi.Controllers
             }
             db.Weighings.Remove(weighing);
             await db.SaveChangesAsync();
-            return Ok(weighing);
+            return NoContent();
         }
     }
 }
