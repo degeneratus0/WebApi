@@ -55,17 +55,6 @@ namespace WebApi.Controllers
         /// <summary>
         /// Добавляет запись
         /// </summary>
-        /// <remarks>
-        /// Пример запроса:
-        ///
-        ///     {
-        ///        "item": "string",
-        ///        "weight": int,
-        ///        "measure": "string"
-        ///        "tareType": "string"
-        ///     }
-        ///
-        /// </remarks>
         // POST api/<WeighingsController>
         [HttpPost]
         public async Task<ActionResult<Weighing>> Post(Weighing weighing)
@@ -74,6 +63,7 @@ namespace WebApi.Controllers
             {
                 return BadRequest();
             }
+            weighing.IDWeighing = 0;
             db.Weighings.Add(weighing);
             await db.SaveChangesAsync();
             return Ok(weighing);
@@ -81,8 +71,8 @@ namespace WebApi.Controllers
         /// <summary>
         /// Изменяет определённую запись
         /// </summary>
-        // PUT api/<WeighingsController>/5
-        [HttpPut("{id}")]
+        // PUT api/<WeighingsController>
+        [HttpPut]
         public async Task<ActionResult<Weighing>> Put(Weighing weighing)
         {
             if (weighing == null)
