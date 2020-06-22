@@ -71,7 +71,7 @@ namespace WebApi.Controllers
         /// Изменяет определённую запись
         /// </summary>
         // PUT api/<WeighingsController>
-        [HttpPut("{id}")]
+        [HttpPut]
         public async Task<ActionResult<Weighing>> Put(int id, Weighing weighing)
         {
             if (weighing == null)
@@ -82,12 +82,9 @@ namespace WebApi.Controllers
             {
                 return NotFound();
             }
-            db.Weighings.Find(id).Item = weighing.Item;
-            db.Weighings.Find(id).Weight = weighing.Weight;
-            db.Weighings.Find(id).Measure = weighing.Measure;
-            db.Weighings.Find(id).TareType = weighing.TareType;
+            db.Weighings.Update(weighing);
             await db.SaveChangesAsync();
-            return Ok(db.Weighings.Find(id));
+            return Ok(weighing);
         }
         /// <summary>
         /// Удаляет определённую запись

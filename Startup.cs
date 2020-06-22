@@ -1,20 +1,16 @@
 using System;
 using System.IO;
 using System.Reflection;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 using WebApi.Models;
 using Microsoft.OpenApi.Models;
+using System.Collections.Generic;
+using Microsoft.AspNetCore.Mvc.Formatters;
 
 namespace WebApi
 {
@@ -30,8 +26,9 @@ namespace WebApi
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            string con = "server=127.0.0.1; port=3306; database=weighings; user=root; password=1488";
-            services.AddDbContext<WeighingsContext>(options => options.UseMySql(con));
+            //string con = "server=127.0.0.1; port=3306; database=models; user=root; password=1488";
+            //services.AddDbContext<ModelContext>(options => options.UseMySql(con));
+            //services.AddDbContext<ModelContext>(opt => opt.UseInMemoryDatabase("Models"));
             services.AddControllers();
             services.AddSwaggerGen(c =>
             {
@@ -39,7 +36,6 @@ namespace WebApi
                 {
                     Title = "WebApi",
                     Version = "v1",
-                    Description = "A simple example ASP.NET Core Web API"
                 });
                 var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
                 var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
@@ -51,10 +47,8 @@ namespace WebApi
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             //app.UseAuthorization();
-            //app.UseHttpsRedirection();
+            app.UseHttpsRedirection();
             app.UseDeveloperExceptionPage();
-            //app.UseDefaultFiles();
-            //app.UseStaticFiles();
             app.UseRouting();
             app.UseSwagger();
             app.UseSwaggerUI(c =>
