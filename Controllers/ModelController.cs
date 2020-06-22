@@ -15,16 +15,7 @@ namespace WebApi.Controllers
     [ApiController]
     public class ModelController : ControllerBase
     {
-        static List<string> context = new List<string>();
-        public ModelController()
-        {
-            if(context.Count == 0)
-            {
-                context.Add("item1");
-                context.Add("item2");
-                context.Add("item3");
-            }
-        }
+        static List<string> context = new List<string> { "item1", "item2", "item3" };
         [HttpGet]
         public List<string> Get()
         {
