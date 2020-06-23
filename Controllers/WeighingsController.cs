@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
@@ -16,7 +17,7 @@ using WebApi.Models;
 namespace WebApi.Controllers
 {
     [Produces("application/json")]
-    [Route("api/[controller]")]
+    [Route("api/weighings")]
     [ApiController]
     public class WeighingsController : ControllerBase
     {
@@ -26,36 +27,39 @@ namespace WebApi.Controllers
             db = context;
             if (!db.Weighings.Any())
             {
-                db.Weighings.Add(new Weighing { Item = "Сок", Weight = 200, Measure = "г", TareType = "Коробка" });
-                db.Weighings.Add(new Weighing { Item = "Лимонад", Weight = 1000, Measure = "г", TareType = "Бутылка" });
+                db.Measures.Add(new Measure { MeasureName = "г" });
+                db.Measures.Add(new Measure { MeasureName = "кг" });
+                db.Weighings.Add(new Weighing { Item = "Сок", Weight = 200, idMeasure = 1, TareType = "Коробка" });
+                db.Weighings.Add(new Weighing { Item = "Лимонад", Weight = 1, idMeasure = 2, TareType = "Бутылка" });
                 db.SaveChanges();
             }
         }
-        /// <summary>
-        /// Возвращает все записи
-        /// </summary>
-        // GET: api/<WeighingsController>
+        private static readonly Expression<Func<Weighing, WeighingDTO>> AsWeighingDTO =
+            x => new WeighingDTO
+            {
+                Item = x.Item,
+                Weight = x.Weight,
+                Measure = x.Measure.MeasureName,
+                TareType = x.TareType
+            };
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Weighing>>> Get()
+        public IQueryable<WeighingDTO> GetWeighings()
         {
-            return await db.Weighings.ToListAsync();
+            return db.Weighings.Include(x => x.Measure).Select(AsWeighingDTO);
         }
-        /// <summary>
-        /// Возвращает определённую запись
-        /// </summary>
-        // GET api/<WeighingsController>/5
+        
         [HttpGet("{id}")]
-        public async Task<ActionResult<Weighing>> Get(int id)
+        public async Task<IActionResult> GetWeighing(int id)
         {
-            Weighing weighing = await db.Weighings.FirstOrDefaultAsync(x => x.IDWeighing == id);
+            WeighingDTO weighing = await db.Weighings.Include(x => x.Measure)
+                .Where(x => x.IDWeighing == id)
+                .Select(AsWeighingDTO)
+                .FirstOrDefaultAsync();
             if (weighing == null)
                 return NotFound();
-            return new ObjectResult(weighing);
+            return Ok(weighing);
         }
-        /// <summary>
-        /// Добавляет запись
-        /// </summary>
-        // POST api/<WeighingsController>
+        /*
         [HttpPost]
         public async Task<ActionResult<Weighing>> Post(Weighing weighing)
         {
@@ -67,10 +71,7 @@ namespace WebApi.Controllers
             await db.SaveChangesAsync();
             return Ok(weighing);
         }
-        /// <summary>
-        /// Изменяет определённую запись
-        /// </summary>
-        // PUT api/<WeighingsController>
+
         [HttpPut]
         public async Task<ActionResult<Weighing>> Put(int id, Weighing weighing)
         {
@@ -86,11 +87,8 @@ namespace WebApi.Controllers
             await db.SaveChangesAsync();
             return Ok(weighing);
         }
-        /// <summary>
-        /// Удаляет определённую запись
-        /// </summary>
+
         /// <response code="204">Запись удалена</response>  
-        // DELETE api/<WeighingsController>/5
         [ProducesResponseType(StatusCodes.Status204NoContent)]        
         [HttpDelete("{id}")]
         public async Task<ActionResult<Weighing>> Delete(int id)
@@ -104,5 +102,6 @@ namespace WebApi.Controllers
             await db.SaveChangesAsync();
             return NoContent();
         }
+        */
     }
 }

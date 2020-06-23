@@ -22,13 +22,10 @@ namespace WebApi
         }
 
         public IConfiguration Configuration { get; }
-
-        // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            //string con = "server=127.0.0.1; port=3306; database=models; user=root; password=1488";
-            //services.AddDbContext<ModelContext>(options => options.UseMySql(con));
-            //services.AddDbContext<ModelContext>(opt => opt.UseInMemoryDatabase("Models"));
+            string con = "server=127.0.0.1; port=3306; database=weighings; user=root; password=1488";
+            services.AddDbContext<WeighingsContext>(options => options.UseMySql(con));
             services.AddControllers();
             services.AddSwaggerGen(c =>
             {
@@ -42,8 +39,6 @@ namespace WebApi
                 c.IncludeXmlComments(xmlPath);
             });
         }
-
-        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             //app.UseAuthorization();
