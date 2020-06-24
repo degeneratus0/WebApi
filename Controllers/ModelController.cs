@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.IO.IsolatedStorage;
+using System.Text;
 using Microsoft.AspNetCore.Mvc;
 
 namespace WebApi.Controllers
@@ -10,7 +11,30 @@ namespace WebApi.Controllers
     [ApiController]
     public class ModelController : ControllerBase
     {
-        static List<string> context = new List<string> { "item1", "item2", "item3" };
+        string path = Directory.GetCurrentDirectory() + "\\storage";
+
+        static List<string> context = new List<string>();
+        public ModelController()
+        {
+            if (context.Count == 0)
+                foreach (string s in Directory.GetFiles(path))
+                {
+                    StreamReader sr = new StreamReader(s); 
+                    context.Add(sr.ReadToEnd());
+                    sr.Close();
+                }
+        }
+        private void SaveFiles()
+        {
+            Directory.Delete(path, true);
+            Directory.CreateDirectory(path);
+            for (int i = 0; i < context.Count; i++)
+            {
+                StreamWriter sw = new StreamWriter(path + $"\\{i}.txt", false, System.Text.Encoding.Default);
+                sw.Write(context[i]);
+                sw.Close();
+            }
+        }
         [HttpGet]
         public List<string> Get()
         {
@@ -38,6 +62,7 @@ namespace WebApi.Controllers
                 return BadRequest();
             }
             context.Add(item);
+            SaveFiles();
             return Ok(item);
         }
 
@@ -49,6 +74,7 @@ namespace WebApi.Controllers
                 return NotFound();
             }
             context[id] = item;
+            SaveFiles();
             return NoContent();
         }
 
@@ -60,6 +86,7 @@ namespace WebApi.Controllers
                 return NotFound();
             }
             context.RemoveAt(id);
+            SaveFiles();
             return NoContent();
         }
     }

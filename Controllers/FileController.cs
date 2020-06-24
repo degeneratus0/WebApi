@@ -15,10 +15,11 @@ namespace WebApi.Controllers
             public string content { get; set; }
         }
 
-        string path = "C:\\storage";
+        string path = Directory.GetCurrentDirectory() + "\\storage";
         public FileController()
         {
             Directory.CreateDirectory(path);
+            /*
             StreamWriter sw1 = new StreamWriter(path + "\\text1.txt", false, System.Text.Encoding.Default);
             sw1.Write("test text 1");
             sw1.Close();
@@ -28,6 +29,7 @@ namespace WebApi.Controllers
             StreamWriter sw3 = new StreamWriter(path + "\\text3.txt", false, System.Text.Encoding.Default);
             sw3.Write("test text 3");
             sw3.Close();
+            */
         }
 
         [HttpGet]
