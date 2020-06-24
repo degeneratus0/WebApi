@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Runtime.Serialization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace WebApi.Controllers
@@ -15,21 +16,22 @@ namespace WebApi.Controllers
             public string content { get; set; }
         }
 
-        string path = Directory.GetCurrentDirectory() + "\\storage";
+        string path = Directory.GetCurrentDirectory() + "\\storage\\";
         public FileController()
         {
             Directory.CreateDirectory(path);
-            /*
-            StreamWriter sw1 = new StreamWriter(path + "\\text1.txt", false, System.Text.Encoding.Default);
-            sw1.Write("test text 1");
-            sw1.Close();
-            StreamWriter sw2 = new StreamWriter(path + "\\text2.txt", false, System.Text.Encoding.Default);
-            sw2.Write("test text 2");
-            sw2.Close();
-            StreamWriter sw3 = new StreamWriter(path + "\\text3.txt", false, System.Text.Encoding.Default);
-            sw3.Write("test text 3");
-            sw3.Close();
-            */
+            if (Directory.GetFiles(path).Length == 0)
+            {
+                StreamWriter sw1 = new StreamWriter(path + "1.txt", false, System.Text.Encoding.Default);
+                sw1.Write("text 1");
+                sw1.Close();
+                StreamWriter sw2 = new StreamWriter(path + "2.txt", false, System.Text.Encoding.Default);
+                sw2.Write("text 2");
+                sw2.Close();
+                StreamWriter sw3 = new StreamWriter(path + "3.txt", false, System.Text.Encoding.Default);
+                sw3.Write("text 3");
+                sw3.Close();
+            }
         }
 
         [HttpGet]
@@ -39,18 +41,22 @@ namespace WebApi.Controllers
             
             foreach (string s in Directory.GetFiles(path))
             {
-                datas.Add(new Data() { id = s, content = (new StreamReader(s).ReadToEnd()) });
+                StreamReader sr = new StreamReader(s);
+                datas.Add(new Data() { id = Path.GetFileNameWithoutExtension(s), content = sr.ReadToEnd() });
+                sr.Close();
             }
             return datas;
         }
 
-        /*
         [HttpGet("{id}")]
         public ActionResult<string> Get(int id)
         {
+            StreamReader sr = new StreamReader(path + $"{id}.txt");
+            string s = sr.ReadToEnd();
+            sr.Close();
             try
             {
-                return context[id];
+                return s;
             }
             catch
             {
@@ -65,31 +71,41 @@ namespace WebApi.Controllers
             {
                 return BadRequest();
             }
-            context.Add(item);
+            StreamWriter sw = new StreamWriter(path + (Directory.GetFiles(path).Length + 1) +".txt", false, System.Text.Encoding.Default);
+            sw.Write(item);
+            sw.Close();
             return Ok(item);
         }
-        
+       
         [HttpPut("{id}")]
         public IActionResult Put(int id, [FromBody] string item)
         {
-            if (context[id] == null)
+            if (item == null)
+            {
+                return BadRequest();
+            }
+            StreamReader sr = new StreamReader(path + $"{id}.txt");
+            if (sr.ReadToEnd() == null)
             {
                 return NotFound();
             }
-            context[id] = item;
+            sr.Close();
+            StreamWriter sw = new StreamWriter(path + $"{id}.txt", false, System.Text.Encoding.Default);
+            sw.Write(item);
+            sw.Close();
             return NoContent();
         }
 
         [HttpDelete("{id}")]
         public IActionResult Delete(int id)
         {
-            if(context[id] == null)
+            FileInfo f = new FileInfo(path + $"{id}.txt");
+            if(!f.Exists)
             {
                 return NotFound();
             }
-            context.RemoveAt(id);
+            f.Delete();
             return NoContent();
         }
-        */
     }
 }

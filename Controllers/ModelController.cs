@@ -11,9 +11,9 @@ namespace WebApi.Controllers
     [ApiController]
     public class ModelController : ControllerBase
     {
-        string path = Directory.GetCurrentDirectory() + "\\storage";
+        static string path = Directory.GetCurrentDirectory() + "\\storage";
 
-        static List<string> context = new List<string>();
+        static List<string> context = new List<string>(Directory.GetFiles(path));
         public ModelController()
         {
             if (context.Count == 0)
