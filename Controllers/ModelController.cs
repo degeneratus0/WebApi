@@ -11,34 +11,24 @@ namespace WebApi.Controllers
     [ApiController]
     public class ModelController : ControllerBase
     {
-        static string path = Directory.GetCurrentDirectory() + "\\storage";
-
-        static List<string> context = new List<string>(Directory.GetFiles(path));
+        interface DataStorage
+        {
+            static List<string> context = new List<string>();
+        }
+        //static string path = Directory.GetCurrentDirectory() + "\\storage";
         public ModelController()
         {
-            if (context.Count == 0)
-                foreach (string s in Directory.GetFiles(path))
-                {
-                    StreamReader sr = new StreamReader(s); 
-                    context.Add(sr.ReadToEnd());
-                    sr.Close();
-                }
-        }
-        private void SaveFiles()
-        {
-            Directory.Delete(path, true);
-            Directory.CreateDirectory(path);
-            for (int i = 0; i < context.Count; i++)
+            if (DataStorage.context.Count == 0)
             {
-                StreamWriter sw = new StreamWriter(path + $"\\{i}.txt", false, System.Text.Encoding.Default);
-                sw.Write(context[i]);
-                sw.Close();
-            }
+                DataStorage.context.Add("item1");
+                DataStorage.context.Add("item2");
+                DataStorage.context.Add("item3");
+            } 
         }
         [HttpGet]
         public List<string> Get()
         {
-            return context;
+            return DataStorage.context;
         }
         
         [HttpGet("{id}")]
@@ -46,7 +36,7 @@ namespace WebApi.Controllers
         {
             try
             {
-                return context[id];
+                return DataStorage.context[id];
             }
             catch
             {
@@ -61,32 +51,29 @@ namespace WebApi.Controllers
             {
                 return BadRequest();
             }
-            context.Add(item);
-            SaveFiles();
+            DataStorage.context.Add(item);
             return Ok(item);
         }
 
         [HttpPut("{id}")]
         public IActionResult Put(int id, [FromBody] string item)
         {
-            if (context[id] == null)
+            if (DataStorage.context[id] == null)
             {
                 return NotFound();
             }
-            context[id] = item;
-            SaveFiles();
+            DataStorage.context[id] = item;
             return NoContent();
         }
 
         [HttpDelete("{id}")]
         public IActionResult Delete(int id)
         {
-            if(context[id] == null)
+            if(DataStorage.context[id] == null)
             {
                 return NotFound();
             }
-            context.RemoveAt(id);
-            SaveFiles();
+            DataStorage.context.RemoveAt(id);
             return NoContent();
         }
     }
