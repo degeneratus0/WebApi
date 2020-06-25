@@ -6,14 +6,34 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace WebApi.Controllers
 {
+    public interface IData
+    {
+        static string path = Directory.GetCurrentDirectory() + "\\storage\\";
+        public class Data
+        {
+            public string id { get; set; }
+            public string content { get; set; }
+        }
+        void Set();
+        string Read(string id);
+        List<Data> ReadAll();
+        void Add(string content);
+        void Edit(string id, string content);
+        void Delete(string id);
+    }
     [Route("api/files")]
     [ApiController]
     public class FileController : ControllerBase
     {
-        interface DataWork
+        public class DataWork : IData
         {
             static string path = Directory.GetCurrentDirectory() + "\\storage\\";
-            static void Set()
+            public class Data
+            {
+                public string id { get; set; }
+                public string content { get; set; }
+            }
+            public void Set()
             {
                 Directory.CreateDirectory(path);
                 if (Directory.GetFiles(path).Length == 0)
@@ -23,7 +43,7 @@ namespace WebApi.Controllers
                     Add("text 3");
                 }
             }
-            static string Read(string id)
+            public string Read(string id)
             {
                 try
                 {
@@ -37,61 +57,57 @@ namespace WebApi.Controllers
                     return null;
                 }
             }
-            static List<Data> ReadAll()
+            public List<IData.Data> ReadAll()
             {
-                List<Data> datas = new List<Data>();
+                List<IData.Data> datas = new List<IData.Data>();
                 foreach (string s in Directory.GetFiles(path))
                 {
-                    datas.Add(new Data() { 
-                        id = Path.GetFileNameWithoutExtension(s), 
-                        content = Read(Path.GetFileNameWithoutExtension(s)) 
+                    datas.Add(new IData.Data()
+                    {
+                        id = Path.GetFileNameWithoutExtension(s),
+                        content = Read(Path.GetFileNameWithoutExtension(s))
                     });
                 }
                 return datas;
             }
-            static void Add(string content)
+            public void Add(string content)
             {
                 StreamWriter sw = new StreamWriter(path + (Directory.GetFiles(path).Length + 1) + ".txt", false, System.Text.Encoding.Default);
                 sw.Write(content);
                 sw.Close();
             }
-            static void Edit(string id, string content)
+            public void Edit(string id, string content)
             {
                 StreamWriter sw = new StreamWriter(path + id + ".txt", false, System.Text.Encoding.Default);
                 sw.Write(content);
                 sw.Close();
             }
-            static void Delete(string id)
+            public void Delete(string id)
             {
                 FileInfo f = new FileInfo(path + id + ".txt");
                 f.Delete();
             }
         }
-        public class Data
-        {
-            public string id { get; set; }
-            public string content { get; set; }
-        }
-        
+        DataWork dataWork = new DataWork();
         public FileController()
         {
-            DataWork.Set();
+            dataWork.Set();
         }
 
         [HttpGet]
-        public List<Data> Get()
+        public List<IData.Data> Get()
         {
-            return DataWork.ReadAll();
+            return dataWork.ReadAll();
         }
 
         [HttpGet("{id}")]
         public ActionResult<string> Get(string id)
         {
-            if (DataWork.Read(id) == null)
+            if (dataWork.Read(id) == null)
             {
                 return NotFound();
             }
-            return DataWork.Read(id);
+            return dataWork.Read(id);
         }
         
         [HttpPost]
@@ -101,7 +117,7 @@ namespace WebApi.Controllers
             {
                 return BadRequest();
             }
-            DataWork.Add(item);
+            dataWork.Add(item);
             return Ok(item);
         }
         
@@ -112,21 +128,21 @@ namespace WebApi.Controllers
             {
                 return BadRequest();
             }
-            if (DataWork.Read(id) == null)
+            if (dataWork.Read(id) == null)
             {
                 return NotFound();
             }
-            DataWork.Edit(id, item);
+            dataWork.Edit(id, item);
             return NoContent();
         }
         [HttpDelete("{id}")]
         public IActionResult Delete(string id)
         {
-            if (DataWork.Read(id) == null)
+            if (dataWork.Read(id) == null)
             {
                 return NotFound();
             }
-            DataWork.Delete(id);
+            dataWork.Delete(id);
             return NoContent();
         }
     }
