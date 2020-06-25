@@ -27,16 +27,10 @@ namespace WebApi.Controllers
     {
         public class DataWork : IData
         {
-            static string path = Directory.GetCurrentDirectory() + "\\storage\\";
-            public class Data
-            {
-                public string id { get; set; }
-                public string content { get; set; }
-            }
             public void Set()
             {
-                Directory.CreateDirectory(path);
-                if (Directory.GetFiles(path).Length == 0)
+                Directory.CreateDirectory(IData.path);
+                if (Directory.GetFiles(IData.path).Length == 0)
                 {
                     Add("text 1");
                     Add("text 2");
@@ -47,7 +41,7 @@ namespace WebApi.Controllers
             {
                 try
                 {
-                    StreamReader sr = new StreamReader(path + id + ".txt");
+                    StreamReader sr = new StreamReader(IData.path + id + ".txt");
                     string s = sr.ReadToEnd();
                     sr.Close();
                     return s;
@@ -60,7 +54,7 @@ namespace WebApi.Controllers
             public List<IData.Data> ReadAll()
             {
                 List<IData.Data> datas = new List<IData.Data>();
-                foreach (string s in Directory.GetFiles(path))
+                foreach (string s in Directory.GetFiles(IData.path))
                 {
                     datas.Add(new IData.Data()
                     {
@@ -72,19 +66,19 @@ namespace WebApi.Controllers
             }
             public void Add(string content)
             {
-                StreamWriter sw = new StreamWriter(path + (Directory.GetFiles(path).Length + 1) + ".txt", false, System.Text.Encoding.Default);
+                StreamWriter sw = new StreamWriter(IData.path + (Directory.GetFiles(IData.path).Length + 1) + ".txt", false, System.Text.Encoding.Default);
                 sw.Write(content);
                 sw.Close();
             }
             public void Edit(string id, string content)
             {
-                StreamWriter sw = new StreamWriter(path + id + ".txt", false, System.Text.Encoding.Default);
+                StreamWriter sw = new StreamWriter(IData.path + id + ".txt", false, System.Text.Encoding.Default);
                 sw.Write(content);
                 sw.Close();
             }
             public void Delete(string id)
             {
-                FileInfo f = new FileInfo(path + id + ".txt");
+                FileInfo f = new FileInfo(IData.path + id + ".txt");
                 f.Delete();
             }
         }
