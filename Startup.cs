@@ -11,6 +11,7 @@ using WebApi.Models;
 using Microsoft.OpenApi.Models;
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc.Formatters;
+using WebApi.Interfaces;
 
 namespace WebApi
 {
@@ -25,6 +26,7 @@ namespace WebApi
         public void ConfigureServices(IServiceCollection services)
         {
             string con = "server=127.0.0.1; port=3306; database=weighings; user=root; password=1488";
+            services.AddTransient<IData, FileWork>();
             services.AddDbContext<WeighingsContext>(options => options.UseMySql(con));
             services.AddControllers();
             services.AddSwaggerGen(c =>

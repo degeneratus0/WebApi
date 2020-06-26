@@ -11,24 +11,20 @@ namespace WebApi.Controllers
     [ApiController]
     public class ModelController : ControllerBase
     {
-        interface DataStorage
-        {
-            static List<string> context = new List<string>();
-        }
-        //static string path = Directory.GetCurrentDirectory() + "\\storage";
+        static List<string> context = new List<string>();
         public ModelController()
         {
-            if (DataStorage.context.Count == 0)
+            if (context.Count == 0)
             {
-                DataStorage.context.Add("item1");
-                DataStorage.context.Add("item2");
-                DataStorage.context.Add("item3");
+                context.Add("item1");
+                context.Add("item2");
+                context.Add("item3");
             } 
         }
         [HttpGet]
         public List<string> Get()
         {
-            return DataStorage.context;
+            return context;
         }
         
         [HttpGet("{id}")]
@@ -36,7 +32,7 @@ namespace WebApi.Controllers
         {
             try
             {
-                return DataStorage.context[id];
+                return context[id];
             }
             catch
             {
@@ -51,29 +47,29 @@ namespace WebApi.Controllers
             {
                 return BadRequest();
             }
-            DataStorage.context.Add(item);
+            context.Add(item);
             return Ok(item);
         }
 
         [HttpPut("{id}")]
         public IActionResult Put(int id, [FromBody] string item)
         {
-            if (DataStorage.context[id] == null)
+            if (context[id] == null)
             {
                 return NotFound();
             }
-            DataStorage.context[id] = item;
+            context[id] = item;
             return NoContent();
         }
 
         [HttpDelete("{id}")]
         public IActionResult Delete(int id)
         {
-            if(DataStorage.context[id] == null)
+            if(context[id] == null)
             {
                 return NotFound();
             }
-            DataStorage.context.RemoveAt(id);
+            context.RemoveAt(id);
             return NoContent();
         }
     }
