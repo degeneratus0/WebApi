@@ -5,13 +5,12 @@ using System.Threading.Tasks;
 
 namespace WebApi.Models
 {
-    public class Weighing
+    public class WeighingDTOid
     {
         public int IDWeighing { get; set; }
         public string Item { get; set; }
         public int Weight { get; set; }
-        public int? idMeasure { get; set; }
-        public Measure Measure { get; set; }
+        public string Measure { get; set; }
         public string TareType { get; set; }
     }
 }

@@ -10,9 +10,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Internal;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.OpenApi.Models;
+using WebApi.Interfaces;
 using WebApi.Models;
-
-// For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
 namespace WebApi.Controllers
 {
@@ -25,6 +24,7 @@ namespace WebApi.Controllers
         public WeighingsController(WeighingsContext context)
         {
             db = context;
+
             if (!db.Weighings.Any())
             {
                 db.Measures.Add(new Measure { MeasureName = "г" });
@@ -42,8 +42,9 @@ namespace WebApi.Controllers
                 Measure = x.Measure.MeasureName,
                 TareType = x.TareType
             };
+
         [HttpGet]
-        public IQueryable<WeighingDTO> GetWeighings()
+        public IEnumerable<WeighingDTO> GetWeighings()
         {
             return db.Weighings.Include(x => x.Measure).Select(AsWeighingDTO);
         }

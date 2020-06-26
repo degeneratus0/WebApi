@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc;
 using WebApi.Interfaces;
-
+using WebApi.Models;
 
 namespace WebApi.Controllers
 {
@@ -10,62 +10,62 @@ namespace WebApi.Controllers
     [ApiController]
     public class FileController : ControllerBase
     {
-        IData dataWork;
-        public FileController(IData data)
+        IFile fileWork;
+        public FileController(IFile data)
         {
-            dataWork = data;
-            dataWork.Set();
+            fileWork = data;
+            fileWork.Set();
         }
 
         [HttpGet]
-        public List<IData.Data> Get()
+        public List<Data> Get()
         {
-            return dataWork.ReadAll();
+            return fileWork.ReadAll();
         }
 
         [HttpGet("{id}")]
         public ActionResult<string> Get(string id)
         {
-            if (dataWork.Read(id) == null)
+            if (fileWork.Read(id) == null)
             {
                 return NotFound();
             }
-            return dataWork.Read(id);
+            return fileWork.Read(id);
         }
         
         [HttpPost]
-        public ActionResult<string> Post([FromBody] string item)
+        public ActionResult<string> Post([FromBody] DataDTO item)
         {
             if (item == null)
             {
                 return BadRequest();
             }
-            dataWork.Add(item);
+            fileWork.Add(item);
             return Ok(item);
         }
         
         [HttpPut("{id}")]
-        public IActionResult Put(string id, [FromBody] string item)
+        public IActionResult Put(string id, [FromBody] DataDTO item)
         {
             if (item == null)
             {
                 return BadRequest();
             }
-            if (dataWork.Read(id) == null)
+            if (fileWork.Read(id) == null)
             {
                 return NotFound();
             }
-            dataWork.Edit(id, item);
+            fileWork.Edit(id, item);
             return NoContent();
         }
         [HttpDelete("{id}")]
         public IActionResult Delete(string id)
         {
-            if (dataWork.Read(id) == null)
+            if (fileWork.Read(id) == null)
             {
                 return NotFound();
             }
-            dataWork.Delete(id);
+            fileWork.Delete(id);
             return NoContent();
         }
     }

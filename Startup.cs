@@ -12,6 +12,7 @@ using Microsoft.OpenApi.Models;
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc.Formatters;
 using WebApi.Interfaces;
+using WebApi.Services;
 
 namespace WebApi
 {
@@ -25,9 +26,11 @@ namespace WebApi
         public IConfiguration Configuration { get; }
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddTransient<IFile, FCFileWork>();
+
             string con = "server=127.0.0.1; port=3306; database=weighings; user=root; password=1488";
-            services.AddTransient<IData, FileWork>();
             services.AddDbContext<WeighingsContext>(options => options.UseMySql(con));
+
             services.AddControllers();
             services.AddSwaggerGen(c =>
             {
@@ -47,12 +50,14 @@ namespace WebApi
             app.UseHttpsRedirection();
             app.UseDeveloperExceptionPage();
             app.UseRouting();
+
             app.UseSwagger();
             app.UseSwaggerUI(c =>
             {
                 c.SwaggerEndpoint("/swagger/v1/swagger.json", "WebApi v1");
                 c.RoutePrefix = string.Empty;
             });
+
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
