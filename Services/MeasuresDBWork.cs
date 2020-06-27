@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -38,9 +39,13 @@ namespace WebApi.Services
             context.Add(measure);
             context.SaveChanges();
         }
-        public void Edit(int id, MeasureDTO measureDTO) // не работает
+        public void Edit(int id, MeasureDTO measureDTO)
         {
-            context.Measures.Update(new Measure() { IDMeasure = id, MeasureName = measureDTO.MeasureName });
+            Measure measure = context.Set<Measure>().Local.FirstOrDefault(x => x.IDMeasure == id);
+            context.Entry(measure).State = EntityState.Detached;
+            measure.MeasureName = measureDTO.MeasureName;
+            context.Entry(measure).State = EntityState.Modified;
+            context.Measures.Update(measure);
             context.SaveChanges();
         }
         public void Delete(int id)

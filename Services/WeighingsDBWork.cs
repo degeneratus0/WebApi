@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.OpenApi.Any;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -26,7 +27,7 @@ namespace WebApi.Services
         }
         public IEnumerable<WeighingDTOid> ReadAll()
         {
-            return context.Weighings.Include(x => x.Measure).Select(AsDTOid);
+            return context.Weighings.Include(x => x.Measure).Select(AsDTOid).OrderBy(x => x.IDWeighing);
         }
         public WeighingDTOid Read(int id)
         {
@@ -37,12 +38,22 @@ namespace WebApi.Services
         }
         public void Add(WeighingDTO weighing)
         {
+            if (!context.Measures.Any(x => x.MeasureName == weighing.Measure))
+            {
+                throw new Exception();
+            }
             context.Add(new Weighing { Item = weighing.Item, Weight = weighing.Weight, idMeasure = context.Measures.FirstOrDefault(x => x.MeasureName == weighing.Measure).IDMeasure, TareType = weighing.TareType });
             context.SaveChanges();
         }
-        public void Edit(int id, WeighingDTO weighing) // не работает
+        public void Edit(int id, WeighingDTO weighingDTO)
         {
-            context.Update(new Weighing { IDWeighing = id, Item = weighing.Item, Weight = weighing.Weight, idMeasure=context.Measures.FirstOrDefault(x => x.MeasureName == weighing.Measure).IDMeasure, TareType = weighing.TareType });
+            Weighing weighing = context.Set<Weighing>().Local.FirstOrDefault(x => x.IDWeighing == id);
+            context.Entry(weighing).State = EntityState.Detached;
+            weighing.Item = weighingDTO.Item;
+            weighing.Weight = weighingDTO.Weight;
+            weighing.idMeasure = context.Measures.FirstOrDefault(x => x.MeasureName == weighingDTO.Measure).IDMeasure;
+            context.Entry(weighing).State = EntityState.Modified;
+            context.Update(weighing);
             context.SaveChanges();
         }
         public void Delete(int id)

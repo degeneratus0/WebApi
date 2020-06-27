@@ -45,12 +45,15 @@ namespace WebApi.Controllers
         [HttpPost]
         public IActionResult Post(WeighingDTO weighing)
         {
-            if (weighing == null)
+            try
+            {
+                Weighings.Add(weighing);
+                return Ok(weighing);
+            }
+            catch
             {
                 return BadRequest();
             }
-            Weighings.Add(weighing);
-            return Ok(weighing);
         }
         [HttpPut]
         public IActionResult Put(int id, WeighingDTO weighing)
