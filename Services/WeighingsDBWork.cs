@@ -47,6 +47,10 @@ namespace WebApi.Services
         }
         public void Edit(int id, WeighingDTO weighingDTO)
         {
+            if (!context.Measures.Any(x => x.MeasureName == weighingDTO.Measure))
+            {
+                throw new Exception();
+            }
             Weighing weighing = context.Set<Weighing>().Local.FirstOrDefault(x => x.IDWeighing == id);
             context.Entry(weighing).State = EntityState.Detached;
             weighing.Item = weighingDTO.Item;

@@ -58,16 +58,19 @@ namespace WebApi.Controllers
         [HttpPut]
         public IActionResult Put(int id, WeighingDTO weighing)
         {
-            if (weighing == null)
-            {
-                return BadRequest();
-            }
             if (Weighings.Read(id) == null)
             {
                 return NotFound();
             }
-            Weighings.Edit(id, weighing);
-            return Ok(weighing);
+            try
+            {
+                Weighings.Edit(id, weighing);
+                return Ok(weighing);
+            }
+            catch
+            {
+                return BadRequest();
+            }
         }
         /// <response code="204">Запись удалена</response>  
         [ProducesResponseType(StatusCodes.Status204NoContent)]        
