@@ -27,6 +27,8 @@ namespace WebApi
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddTransient<IFile, FCFileWork>();
+            services.AddTransient<IWeighings<Weighing, WeighingDTO, WeighingDTOid>, WeighingsDBWork>();
+            services.AddTransient<IWeighings<Measure, MeasureDTO, MeasureDTOid>, MeasuresDBWork>();
 
             string con = "server=127.0.0.1; port=3306; database=weighings; user=root; password=1488";
             services.AddDbContext<WeighingsContext>(options => options.UseMySql(con));

@@ -20,89 +20,63 @@ namespace WebApi.Controllers
     [ApiController]
     public class WeighingsController : ControllerBase
     {
-        WeighingsContext db;
-        public WeighingsController(WeighingsContext context)
+        
+        IWeighings<Weighing, WeighingDTO, WeighingDTOid> Weighings;
+        public WeighingsController(IWeighings<Weighing, WeighingDTO, WeighingDTOid> weighings)
         {
-            db = context;
-
-            if (!db.Weighings.Any())
-            {
-                db.Measures.Add(new Measure { MeasureName = "г" });
-                db.Measures.Add(new Measure { MeasureName = "кг" });
-                db.Weighings.Add(new Weighing { Item = "Сок", Weight = 200, idMeasure = 1, TareType = "Коробка" });
-                db.Weighings.Add(new Weighing { Item = "Лимонад", Weight = 1, idMeasure = 2, TareType = "Бутылка" });
-                db.SaveChanges();
-            }
+            Weighings = weighings;
+            Weighings.Set();
         }
-        private static readonly Expression<Func<Weighing, WeighingDTO>> AsWeighingDTO =
-            x => new WeighingDTO
-            {
-                Item = x.Item,
-                Weight = x.Weight,
-                Measure = x.Measure.MeasureName,
-                TareType = x.TareType
-            };
 
         [HttpGet]
-        public IEnumerable<WeighingDTO> GetWeighings()
+        public IEnumerable<WeighingDTOid> Get()
         {
-            return db.Weighings.Include(x => x.Measure).Select(AsWeighingDTO);
+            return Weighings.ReadAll();
         }
         
+        
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetWeighing(int id)
+        public IActionResult Get(int id)
         {
-            WeighingDTO weighing = await db.Weighings.Include(x => x.Measure)
-                .Where(x => x.IDWeighing == id)
-                .Select(AsWeighingDTO)
-                .FirstOrDefaultAsync();
-            if (weighing == null)
+            if (Weighings.Read(id) == null)
                 return NotFound();
-            return Ok(weighing);
+            return Ok(Weighings.Read(id));
         }
-        /*
         [HttpPost]
-        public async Task<ActionResult<Weighing>> Post(Weighing weighing)
+        public IActionResult Post(WeighingDTO weighing)
         {
             if (weighing == null)
             {
                 return BadRequest();
             }
-            db.Weighings.Add(weighing);
-            await db.SaveChangesAsync();
+            Weighings.Add(weighing);
             return Ok(weighing);
         }
-
         [HttpPut]
-        public async Task<ActionResult<Weighing>> Put(int id, Weighing weighing)
+        public IActionResult Put(int id, WeighingDTO weighing)
         {
             if (weighing == null)
             {
                 return BadRequest();
             }
-            if (!db.Weighings.Any(x => x.IDWeighing == id))
+            if (Weighings.Read(id) == null)
             {
                 return NotFound();
             }
-            db.Weighings.Update(weighing);
-            await db.SaveChangesAsync();
+            Weighings.Edit(id, weighing);
             return Ok(weighing);
         }
-
         /// <response code="204">Запись удалена</response>  
         [ProducesResponseType(StatusCodes.Status204NoContent)]        
         [HttpDelete("{id}")]
-        public async Task<ActionResult<Weighing>> Delete(int id)
+        public IActionResult Delete(int id)
         {
-            Weighing weighing = db.Weighings.FirstOrDefault(x => x.IDWeighing == id);
-            if (weighing == null)
+            if (Weighings.Read(id) == null)
             {
                 return NotFound();
             }
-            db.Weighings.Remove(weighing);
-            await db.SaveChangesAsync();
+            Weighings.Delete(id);
             return NoContent();
         }
-        */
     }
 }

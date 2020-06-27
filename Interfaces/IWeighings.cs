@@ -7,7 +7,7 @@ using WebApi.Models;
 
 namespace WebApi.Interfaces
 {
-    interface IWeighings<T, DTO, DTOid>
+    public interface IWeighings<T, DTO, DTOid>
     {
         void Set();
         DTOid Read(int id);

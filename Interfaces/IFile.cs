@@ -8,7 +8,7 @@ using WebApi.Models;
 
 namespace WebApi.Interfaces
 {
-    interface IFile
+    public interface IFile
     {
         void Set();
         string Read(string id);
