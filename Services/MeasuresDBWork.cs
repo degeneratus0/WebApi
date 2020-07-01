@@ -36,7 +36,7 @@ namespace WebApi.Services
         }
         public void Add(MeasureDTO measure)
         {
-            context.Add(measure);
+            context.Add(new Measure { MeasureName = measure.MeasureName });
             context.SaveChanges();
         }
         public void Edit(int id, MeasureDTO measureDTO)

@@ -10,15 +10,15 @@ namespace WebApi.Controllers
     [ApiController]
     public class FileController : ControllerBase
     {
-        IFile fileWork;
-        public FileController(IFile data)
+        IFile<Data, DataDTO> fileWork;
+        public FileController(IFile<Data, DataDTO> data)
         {
             fileWork = data;
             fileWork.Set();
         }
 
         [HttpGet]
-        public List<Data> Get()
+        public IEnumerable<Data> Get()
         {
             return fileWork.ReadAll();
         }

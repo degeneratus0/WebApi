@@ -8,13 +8,13 @@ using WebApi.Models;
 
 namespace WebApi.Interfaces
 {
-    public interface IFile
+    public interface IFile<T, DTO>
     {
         void Set();
         string Read(string id);
-        List<Data> ReadAll();
-        void Add(DataDTO data);
-        void Edit(string id, DataDTO data);
+        IEnumerable<T> ReadAll();
+        void Add(DTO data);
+        void Edit(string id, DTO data);
         void Delete(string id);
     }
 }

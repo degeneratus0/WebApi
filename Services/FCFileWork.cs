@@ -8,7 +8,7 @@ using WebApi.Models;
 
 namespace WebApi.Services
 {
-    public class FCFileWork : IFile
+    public class FCFileWork : IFile<Data, DataDTO>
     {
         static string path = Directory.GetCurrentDirectory() + "\\storage\\";
         public void Set()
@@ -35,7 +35,7 @@ namespace WebApi.Services
                 return null;
             }
         }
-        public List<Data> ReadAll()
+        public IEnumerable<Data> ReadAll()
         {
             List<Data> datas = new List<Data>();
             foreach (string s in Directory.GetFiles(path))

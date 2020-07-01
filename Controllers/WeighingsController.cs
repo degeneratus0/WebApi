@@ -42,6 +42,7 @@ namespace WebApi.Controllers
                 return NotFound();
             return Ok(Weighings.Read(id));
         }
+
         [HttpPost]
         public IActionResult Post(WeighingDTO weighing)
         {
@@ -55,6 +56,7 @@ namespace WebApi.Controllers
                 return BadRequest();
             }
         }
+
         [HttpPut]
         public IActionResult Put(int id, WeighingDTO weighing)
         {
