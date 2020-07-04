@@ -1,7 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using WebApi.Interfaces;
 using WebApi.Models;
@@ -12,17 +10,19 @@ namespace WebApi.Controllers
     [ApiController]
     public class MeasuresController : ControllerBase
     {
-        IWeighings<Measure, MeasureDTO, MeasureDTOid> Measures;
-        public MeasuresController(IWeighings<Measure, MeasureDTO, MeasureDTOid> measures)
+        IData<Measure> Measures;
+        IWeighings<Measure, MeasureDTO, MeasureDTOid> DTO;
+        public MeasuresController(IData<Measure> measures, IWeighings<Measure, MeasureDTO, MeasureDTOid> dto)
         {
             Measures = measures;
             Measures.Set();
+            DTO = dto;
         }
 
         [HttpGet]
         public IEnumerable<MeasureDTOid> Get()
         {
-            return Measures.ReadAll();
+            return Measures.ReadAll().Select(DTO.AsDTOid);
         }
 
         [HttpGet("{id}")]
@@ -30,7 +30,7 @@ namespace WebApi.Controllers
         {
             if (Measures.Read(id) == null)
                 return NotFound();
-            return Ok(Measures.Read(id));
+            return Ok(DTO.AsDTO(Measures.Read(id)));
         }
         
         [HttpPost]
@@ -40,7 +40,7 @@ namespace WebApi.Controllers
             {
                 return BadRequest();
             }
-            Measures.Add(measure);
+            Measures.Add(DTO.FromDTO(measure));
             return Ok(measure);
         }
 
@@ -55,7 +55,7 @@ namespace WebApi.Controllers
             {
                 return NotFound();
             }
-            Measures.Edit(id, measure);
+            Measures.Edit(id, DTO.FromDTO(measure));
             return Ok(measure);
         }
 

@@ -1,15 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Linq.Expressions;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Internal;
-using Microsoft.Extensions.FileProviders;
-using Microsoft.OpenApi.Models;
 using WebApi.Interfaces;
 using WebApi.Models;
 
@@ -21,17 +13,19 @@ namespace WebApi.Controllers
     public class WeighingsController : ControllerBase
     {
         
-        IWeighings<Weighing, WeighingDTO, WeighingDTOid> Weighings;
-        public WeighingsController(IWeighings<Weighing, WeighingDTO, WeighingDTOid> weighings)
+        IData<Weighing> Weighings;
+        IWeighings<Weighing, WeighingDTO, WeighingDTOid> DTO;
+        public WeighingsController(IData<Weighing> weighings, IWeighings<Weighing, WeighingDTO, WeighingDTOid> dto)
         {
             Weighings = weighings;
             Weighings.Set();
+            DTO = dto;
         }
 
         [HttpGet]
         public IEnumerable<WeighingDTOid> Get()
         {
-            return Weighings.ReadAll();
+            return Weighings.ReadAll().Select(DTO.AsDTOid);
         }
         
         
@@ -40,7 +34,7 @@ namespace WebApi.Controllers
         {
             if (Weighings.Read(id) == null)
                 return NotFound();
-            return Ok(Weighings.Read(id));
+            return Ok(DTO.AsDTO(Weighings.Read(id)));
         }
 
         [HttpPost]
@@ -48,7 +42,7 @@ namespace WebApi.Controllers
         {
             try
             {
-                Weighings.Add(weighing);
+                Weighings.Add(DTO.FromDTO(weighing));
                 return Ok(weighing);
             }
             catch
@@ -66,7 +60,7 @@ namespace WebApi.Controllers
             }
             try
             {
-                Weighings.Edit(id, weighing);
+                Weighings.Edit(id, DTO.FromDTO(weighing));
                 return Ok(weighing);
             }
             catch

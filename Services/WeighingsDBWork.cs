@@ -1,15 +1,13 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.OpenApi.Any;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using WebApi.Interfaces;
 using WebApi.Models;
 
 namespace WebApi.Services
 {
-    public class WeighingsDBWork : IWeighings<Weighing, WeighingDTO, WeighingDTOid>
+    public class WeighingsDBWork : IData<Weighing>
     {
         WeighingsContext context;
         public WeighingsDBWork(WeighingsContext context)
@@ -25,37 +23,36 @@ namespace WebApi.Services
                 context.SaveChanges();
             }
         }
-        public IEnumerable<WeighingDTOid> ReadAll()
+        public IEnumerable<Weighing> ReadAll()
         {
-            return context.Weighings.Include(x => x.Measure).Select(AsDTOid).OrderBy(x => x.IDWeighing);
+            return context.Weighings.Include(x => x.Measure).OrderBy(x => x.IDWeighing);
         }
-        public WeighingDTOid Read(int id)
+        public Weighing Read(int id)
         {
             return context.Weighings.Include(x => x.Measure)
                 .Where(x => x.IDWeighing == id)
-                .Select(AsDTOid)
                 .FirstOrDefault();
         }
-        public void Add(WeighingDTO weighing)
+        public void Add(Weighing weighing)
         {
-            if (!context.Measures.Any(x => x.MeasureName == weighing.Measure))
+            /*if (!context.Measures.Any(x => x.MeasureName == weighing.Measure.MeasureName))
             {
                 throw new Exception();
-            }
-            context.Add(new Weighing { Item = weighing.Item, Weight = weighing.Weight, idMeasure = context.Measures.FirstOrDefault(x => x.MeasureName == weighing.Measure).IDMeasure, TareType = weighing.TareType });
+            }*/
+            context.Add(new Weighing { Item = weighing.Item, Weight = weighing.Weight, idMeasure = context.Measures.FirstOrDefault(x => x.MeasureName == weighing.Measure.MeasureName).IDMeasure, TareType = weighing.TareType });
             context.SaveChanges();
         }
-        public void Edit(int id, WeighingDTO weighingDTO)
+        public void Edit(int id, Weighing weighing)
         {
-            if (!context.Measures.Any(x => x.MeasureName == weighingDTO.Measure))
+            /*if (!context.Measures.Any(x => x.MeasureName == weighing.Measure.MeasureName))
             {
                 throw new Exception();
-            }
-            Weighing weighing = context.Set<Weighing>().Local.FirstOrDefault(x => x.IDWeighing == id);
-            context.Entry(weighing).State = EntityState.Detached;
-            weighing.Item = weighingDTO.Item;
-            weighing.Weight = weighingDTO.Weight;
-            weighing.idMeasure = context.Measures.FirstOrDefault(x => x.MeasureName == weighingDTO.Measure).IDMeasure;
+            }*/
+            Weighing editedWeighing = context.Set<Weighing>().Local.FirstOrDefault(x => x.IDWeighing == id);
+            context.Entry(editedWeighing).State = EntityState.Detached;
+            editedWeighing.Item = weighing.Item;
+            editedWeighing.Weight = weighing.Weight;
+            editedWeighing.idMeasure = context.Measures.FirstOrDefault(x => x.MeasureName == weighing.Measure.MeasureName).IDMeasure;
             context.Entry(weighing).State = EntityState.Modified;
             context.Update(weighing);
             context.SaveChanges();
@@ -65,26 +62,6 @@ namespace WebApi.Services
             context.Weighings.Remove(context.Weighings.FirstOrDefault(x => x.IDWeighing == id));
             context.SaveChanges();
         }
-        public WeighingDTO AsDTO(Weighing weighing)
-        {
-            return new WeighingDTO
-            {
-                Item = weighing.Item,
-                Weight = weighing.Weight,
-                Measure = weighing.Measure.MeasureName,
-                TareType = weighing.TareType
-            };
-        }
-        public WeighingDTOid AsDTOid(Weighing weighing)
-        {
-            return new WeighingDTOid
-            {
-                IDWeighing = weighing.IDWeighing,
-                Item = weighing.Item,
-                Weight = weighing.Weight,
-                Measure = weighing.Measure.MeasureName,
-                TareType = weighing.TareType
-            };
-        }
+
     }
 }
