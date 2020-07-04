@@ -11,8 +11,8 @@ namespace WebApi.Controllers
     public class MeasuresController : ControllerBase
     {
         IData<Measure> Measures;
-        IWeighings<Measure, MeasureDTO, MeasureDTOid> DTO;
-        public MeasuresController(IData<Measure> measures, IWeighings<Measure, MeasureDTO, MeasureDTOid> dto)
+        IConverter<Measure, MeasureDTO, MeasureDTOid> DTO;
+        public MeasuresController(IData<Measure> measures, IConverter<Measure, MeasureDTO, MeasureDTOid> dto)
         {
             Measures = measures;
             Measures.Set();

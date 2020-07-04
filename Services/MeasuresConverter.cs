@@ -6,7 +6,7 @@ using WebApi.Models;
 
 namespace WebApi.Services
 {
-    public class MeasuresConverter : IWeighings<Measure, MeasureDTO, MeasureDTOid>
+    public class MeasuresConverter : IConverter<Measure, MeasureDTO, MeasureDTOid>
     {
         /*
         WeighingsContext context;

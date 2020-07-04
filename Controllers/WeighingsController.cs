@@ -14,8 +14,8 @@ namespace WebApi.Controllers
     {
         
         IData<Weighing> Weighings;
-        IWeighings<Weighing, WeighingDTO, WeighingDTOid> DTO;
-        public WeighingsController(IData<Weighing> weighings, IWeighings<Weighing, WeighingDTO, WeighingDTOid> dto)
+        IConverter<Weighing, WeighingDTO, WeighingDTOid> DTO;
+        public WeighingsController(IData<Weighing> weighings, IConverter<Weighing, WeighingDTO, WeighingDTOid> dto)
         {
             Weighings = weighings;
             Weighings.Set();

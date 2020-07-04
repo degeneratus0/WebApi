@@ -2,7 +2,7 @@
 
 namespace WebApi.Interfaces
 {
-    public interface IWeighings<T, DTO, DTOid>
+    public interface IConverter<T, DTO, DTOid>
     {
         /*
         void Set();

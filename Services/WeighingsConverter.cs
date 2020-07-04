@@ -9,7 +9,7 @@ using WebApi.Models;
 
 namespace WebApi.Services
 {
-    public class WeighingsConverter : IWeighings<Weighing, WeighingDTO, WeighingDTOid>
+    public class WeighingsConverter : IConverter<Weighing, WeighingDTO, WeighingDTOid>
     {
         
         WeighingsContext context;
