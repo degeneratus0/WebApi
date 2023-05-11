@@ -12,9 +12,9 @@ namespace WebApi.Controllers
     [ApiController]
     public class WeighingsController : ControllerBase
     {
-        
         IData<Weighing> Weighings;
         IConverter<Weighing, WeighingDTO, WeighingDTOid> DTO;
+
         public WeighingsController(IData<Weighing> weighings, IConverter<Weighing, WeighingDTO, WeighingDTOid> dto)
         {
             Weighings = weighings;
@@ -27,7 +27,6 @@ namespace WebApi.Controllers
         {
             return Weighings.ReadAll().Select(DTO.AsDTOid);
         }
-        
         
         [HttpGet("{id}")]
         public IActionResult Get(int id)
@@ -68,6 +67,7 @@ namespace WebApi.Controllers
                 return BadRequest();
             }
         }
+
         /// <response code="204">Запись удалена</response>  
         [ProducesResponseType(StatusCodes.Status204NoContent)]        
         [HttpDelete("{id}")]

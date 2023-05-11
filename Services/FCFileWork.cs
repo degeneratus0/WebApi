@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
 using WebApi.Interfaces;
 using WebApi.Models;
 
@@ -11,6 +8,7 @@ namespace WebApi.Services
     public class FCFileWork : IFile<Data, DataDTO>
     {
         static string path = Directory.GetCurrentDirectory() + "\\storage\\";
+
         public void Set()
         {
             Directory.CreateDirectory(path);
@@ -21,6 +19,7 @@ namespace WebApi.Services
                 Add(new DataDTO { content = "text 3" });
             }
         }
+
         public string Read(string id)
         {
             try
@@ -35,6 +34,7 @@ namespace WebApi.Services
                 return null;
             }
         }
+
         public IEnumerable<Data> ReadAll()
         {
             List<Data> datas = new List<Data>();
@@ -48,18 +48,21 @@ namespace WebApi.Services
             }
             return datas;
         }
+
         public void Add(DataDTO data)
         {
             StreamWriter sw = new StreamWriter(path + (Directory.GetFiles(path).Length + 1) + ".txt", false, System.Text.Encoding.Default);
             sw.Write(data.content);
             sw.Close();
         }
+
         public void Edit(string id, DataDTO data)
         {
             StreamWriter sw = new StreamWriter(path + id + ".txt", false, System.Text.Encoding.Default);
             sw.Write(data.content);
             sw.Close();
         }
+
         public void Delete(string id)
         {
             FileInfo f = new FileInfo(path + id + ".txt");

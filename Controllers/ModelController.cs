@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.IO.IsolatedStorage;
-using System.Text;
+﻿using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc;
 
 namespace WebApi.Controllers
@@ -12,6 +8,7 @@ namespace WebApi.Controllers
     public class ModelController : ControllerBase
     {
         static List<string> context = new List<string>();
+
         public ModelController()
         {
             if (context.Count == 0)
@@ -21,6 +18,7 @@ namespace WebApi.Controllers
                 context.Add("item3");
             } 
         }
+
         [HttpGet]
         public List<string> Get()
         {

@@ -1,11 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 
 namespace WebApi.Interfaces
 {
-    public interface IData <T>
+    public interface IData<T>
     {
         void Set();
         T Read(int id);

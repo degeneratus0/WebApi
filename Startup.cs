@@ -6,11 +6,8 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 using WebApi.Models;
 using Microsoft.OpenApi.Models;
-using System.Collections.Generic;
-using Microsoft.AspNetCore.Mvc.Formatters;
 using WebApi.Interfaces;
 using WebApi.Services;
 
@@ -24,6 +21,7 @@ namespace WebApi
         }
 
         public IConfiguration Configuration { get; }
+
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddTransient<IFile<Data, DataDTO>, FCFileWork>();
@@ -34,8 +32,8 @@ namespace WebApi
             services.AddTransient<IConverter<Weighing, WeighingDTO, WeighingDTOid>, WeighingsConverter>();
             services.AddTransient<IConverter<Measure, MeasureDTO, MeasureDTOid>, MeasuresConverter>();
 
-            string con = "server=127.0.0.1; port=3306; database=weighings; user=root; password=1488";
-            services.AddDbContext<WeighingsContext>(options => options.UseMySql(con));
+            //string con = "server=127.0.0.1; port=3306; database=weighings; user=root; password=root";
+            services.AddDbContext<WeighingsContext>(options => options.UseInMemoryDatabase("weighings"));
 
             services.AddControllers();
             services.AddSwaggerGen(c =>
@@ -50,10 +48,9 @@ namespace WebApi
                 c.IncludeXmlComments(xmlPath);
             });
         }
+
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-            //app.UseAuthorization();
-            app.UseHttpsRedirection();
             app.UseDeveloperExceptionPage();
             app.UseRouting();
 

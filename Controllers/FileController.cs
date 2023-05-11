@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc;
 using WebApi.Interfaces;
 using WebApi.Models;
@@ -11,6 +10,7 @@ namespace WebApi.Controllers
     public class FileController : ControllerBase
     {
         IFile<Data, DataDTO> fileWork;
+
         public FileController(IFile<Data, DataDTO> data)
         {
             fileWork = data;
@@ -58,6 +58,7 @@ namespace WebApi.Controllers
             fileWork.Edit(id, item);
             return NoContent();
         }
+
         [HttpDelete("{id}")]
         public IActionResult Delete(string id)
         {
