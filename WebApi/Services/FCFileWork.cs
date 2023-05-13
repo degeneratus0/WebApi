@@ -5,7 +5,7 @@ using WebApi.Models;
 
 namespace WebApi.Services
 {
-    public class FCFileWork : IFile<Data, DataDTO>
+    public class FCFileWork : IFile<DataModel, DataDTO>
     {
         static string path = Directory.GetCurrentDirectory() + "\\storage\\";
 
@@ -35,12 +35,12 @@ namespace WebApi.Services
             }
         }
 
-        public IEnumerable<Data> ReadAll()
+        public IEnumerable<DataModel> ReadAll()
         {
-            List<Data> datas = new List<Data>();
+            List<DataModel> datas = new List<DataModel>();
             foreach (string s in Directory.GetFiles(path))
             {
-                datas.Add(new Data()
+                datas.Add(new DataModel()
                 {
                     id = Path.GetFileNameWithoutExtension(s),
                     content = Read(Path.GetFileNameWithoutExtension(s))

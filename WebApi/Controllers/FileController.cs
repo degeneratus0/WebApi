@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using WebApi.Interfaces;
 using WebApi.Models;
@@ -9,16 +10,16 @@ namespace WebApi.Controllers
     [ApiController]
     public class FileController : ControllerBase
     {
-        IFile<Data, DataDTO> fileWork;
+        IFile<DataModel, DataDTO> fileWork;
 
-        public FileController(IFile<Data, DataDTO> data)
+        public FileController(IFile<DataModel, DataDTO> data)
         {
             fileWork = data;
             fileWork.Set();
         }
 
         [HttpGet]
-        public IEnumerable<Data> Get()
+        public IEnumerable<DataModel> Get()
         {
             return fileWork.ReadAll();
         }
@@ -43,7 +44,9 @@ namespace WebApi.Controllers
             fileWork.Add(item);
             return Ok(item);
         }
-        
+
+        /// <response code="204">Item updated</response>  
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
         [HttpPut("{id}")]
         public IActionResult Put(string id, [FromBody] DataDTO item)
         {
@@ -59,6 +62,8 @@ namespace WebApi.Controllers
             return NoContent();
         }
 
+        /// <response code="204">Item deleted</response>  
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
         [HttpDelete("{id}")]
         public IActionResult Delete(string id)
         {

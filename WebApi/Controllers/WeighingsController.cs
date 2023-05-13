@@ -50,6 +50,8 @@ namespace WebApi.Controllers
             }
         }
 
+        /// <response code="204">Item updated</response>  
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
         [HttpPut]
         public IActionResult Put(int id, WeighingDTO weighing)
         {
@@ -68,7 +70,7 @@ namespace WebApi.Controllers
             }
         }
 
-        /// <response code="204">Запись удалена</response>  
+        /// <response code="204">Item deleted</response>  
         [ProducesResponseType(StatusCodes.Status204NoContent)]        
         [HttpDelete("{id}")]
         public IActionResult Delete(int id)

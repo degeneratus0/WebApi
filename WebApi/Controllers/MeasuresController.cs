@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using WebApi.Interfaces;
 using WebApi.Models;
@@ -45,6 +46,8 @@ namespace WebApi.Controllers
             return Ok(measure);
         }
 
+        /// <response code="204">Item updated</response>  
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
         [HttpPut("{id}")]
         public IActionResult Put(int id, MeasureDTO measure)
         {
@@ -60,6 +63,8 @@ namespace WebApi.Controllers
             return Ok(measure);
         }
 
+        /// <response code="204">Item deleted</response>  
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
         [HttpDelete("{id}")]
         public IActionResult Delete(int id)
         {
