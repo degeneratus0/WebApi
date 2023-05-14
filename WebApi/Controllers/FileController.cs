@@ -10,12 +10,32 @@ namespace WebApi.Controllers
     [ApiController]
     public class FileController : ControllerBase
     {
-        IFile<DataModel, DataDTO> fileWork;
+        private readonly IFile<DataModel, DataModelDTO> fileWork;
 
-        public FileController(IFile<DataModel, DataDTO> data)
+        public FileController(IFile<DataModel, DataModelDTO> fileWork)
         {
-            fileWork = data;
-            fileWork.Set();
+            this.fileWork = fileWork;
+        }
+
+        [HttpPost]
+        [Route("Set")]
+        public ActionResult Set([FromBody]List<string> stringDatas)
+        {
+            List<DataModelDTO> datas = new List<DataModelDTO>();
+            foreach (string stringData in stringDatas)
+            {
+                datas.Add(new DataModelDTO() { Content = stringData });
+            }
+            fileWork.Set(datas);
+            return Created(Url.Action(), datas);
+        }
+
+        [HttpDelete]
+        [Route("Clear")]
+        public ActionResult Clear()
+        {
+            fileWork.Clear();
+            return NoContent();
         }
 
         [HttpGet]
@@ -27,30 +47,31 @@ namespace WebApi.Controllers
         [HttpGet("{id}")]
         public ActionResult<string> Get(string id)
         {
-            if (fileWork.Read(id) == null)
+            string result = fileWork.Read(id);
+            if (result == null)
             {
                 return NotFound();
             }
-            return fileWork.Read(id);
+            return result;
         }
         
         [HttpPost]
-        public ActionResult<string> Post([FromBody] DataDTO item)
+        public ActionResult Post([FromBody]DataModelDTO item)
         {
-            if (item == null)
+            if (item == null || item.Content == null)
             {
                 return BadRequest();
             }
             fileWork.Add(item);
-            return Ok(item);
+            return Created(Url.Action(), item);
         }
 
         /// <response code="204">Item updated</response>  
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [HttpPut("{id}")]
-        public IActionResult Put(string id, [FromBody] DataDTO item)
+        public IActionResult Put(string id, [FromBody]DataModelDTO item)
         {
-            if (item == null)
+            if (item == null || item.Content == null)
             {
                 return BadRequest();
             }

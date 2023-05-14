@@ -10,14 +10,14 @@ namespace WebApi.Controllers
     {
         private static List<string> context = new List<string>();
 
-        /// <response code="200">Items set</response>
-        [ProducesResponseType(StatusCodes.Status200OK)]
+        /// <response code="201">Items set</response>
+        [ProducesResponseType(StatusCodes.Status201Created)]
         [HttpPost]
         [Route("Set")]
         public ActionResult Set([FromBody]List<string> newContext)
         {
             context = newContext;
-            return Ok(context);
+            return Created(Url.Action(), context);
         }
 
         /// <response code="200">All items returned</response>
@@ -47,7 +47,7 @@ namespace WebApi.Controllers
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [HttpPost]
-        public ActionResult<string> Post([FromBody] string item)
+        public ActionResult<string> Post([FromBody]string item)
         {
             if (item == null)
             {
@@ -62,7 +62,7 @@ namespace WebApi.Controllers
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [HttpPut("{id}")]
-        public IActionResult Put(int id, [FromBody] string item)
+        public IActionResult Put(int id, [FromBody]string item)
         {
             if (id < 0 || id >= context.Count)
             {

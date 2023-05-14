@@ -1,8 +1,6 @@
 using NUnit.Framework;
 using System.Net;
 using System.Net.Http.Json;
-using System.Text;
-using System.Text.Json;
 
 namespace WebApiTests.DataModelTests
 {
@@ -14,7 +12,7 @@ namespace WebApiTests.DataModelTests
             List<string> expectedModelsContent = new List<string>() { "item1", "item2", "item3" };
 
             HttpResponseMessage response = await httpClient.GetAsync("/api/DataModel");
-            List<string> responseContent = await response.Content.ReadFromJsonAsync<List<string>>();
+            List<string>? responseContent = await response.Content.ReadFromJsonAsync<List<string>>();
 
             TestingUtilities.IsResponseStatus(HttpStatusCode.OK, response.StatusCode);
             Assert.AreEqual(expectedModelsContent, responseContent);
@@ -36,11 +34,7 @@ namespace WebApiTests.DataModelTests
         public async Task PostDataModel()
         {
             string testContent = "item0";
-            StringContent testStringContent = new StringContent(
-                JsonSerializer.Serialize(testContent),
-                Encoding.UTF8,
-                "application/json"
-                );
+            StringContent testStringContent = TestingUtilities.CreateDefaultStringContent(testContent);
 
             HttpResponseMessage response = await httpClient.PostAsync("/api/DataModel", testStringContent);
             string responseContent = await response.Content.ReadAsStringAsync();
@@ -48,11 +42,13 @@ namespace WebApiTests.DataModelTests
             TestingUtilities.IsResponseStatus(HttpStatusCode.Created, response.StatusCode);
             Assert.AreEqual(testContent, responseContent);
 
-            response = await httpClient.GetAsync("/api/DataModel");
-            List<string> responseContentList = await response.Content.ReadFromJsonAsync<List<string>>();
+            // -1 is to find an id of the last element in the original test data
+            // +1 is to account for newly added element
+            response = await httpClient.GetAsync($"/api/DataModel/{testData.Count - 1 + 1}");
+            responseContent = await response.Content.ReadAsStringAsync();
 
             TestingUtilities.IsResponseStatus(HttpStatusCode.OK, response.StatusCode);
-            Assert.AreEqual(testContent, responseContentList.Last());
+            Assert.AreEqual(testContent, responseContent);
         }
 
         [Test]
@@ -60,17 +56,13 @@ namespace WebApiTests.DataModelTests
         {
             string testContent = "test";
             int testId = 0;
-            StringContent testStringContent = new StringContent(
-                JsonSerializer.Serialize(testContent),
-                Encoding.UTF8,
-                "application/json"
-                );
+            StringContent testStringContent = TestingUtilities.CreateDefaultStringContent(testContent);
 
             HttpResponseMessage response = await httpClient.PutAsync($"/api/DataModel/{testId}", testStringContent);
 
             TestingUtilities.IsResponseStatus(HttpStatusCode.NoContent, response.StatusCode);
 
-            GetDataModelById(testId, testContent);
+            await GetDataModelById(testId, testContent);
         }
 
         [Test]

@@ -1,7 +1,7 @@
 ﻿namespace WebApi.Models
 {
-    public class DataDTO
+    public class DataModelDTO
     {
-        public string content { get; set; }
+        public string Content { get; set; }
     }
 }

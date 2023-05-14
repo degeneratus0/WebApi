@@ -7,21 +7,23 @@ namespace WebApiTests.DataModelTests
 {
     public abstract class DataModelTestsBase : WebApiTestsBase
     {
+        public static readonly List<string> testData = new List<string>()
+        {
+            "item1",
+            "item2",
+            "item3"
+        };
+
         [SetUp]
-        public async Task SetupDataModelController()
+        public async Task SetupDataModels()
         {
             StringContent testStringContent = new StringContent(
-                JsonSerializer.Serialize(new List<string>()
-                    {
-                        "item1",
-                        "item2",
-                        "item3"
-                    }),
+                JsonSerializer.Serialize(testData),
                 Encoding.UTF8,
                 "application/json"
                 );
             HttpResponseMessage response = await httpClient.PostAsync("/api/datamodel/set", testStringContent);
-            TestingUtilities.IsResponseStatus(HttpStatusCode.OK, response.StatusCode);
+            TestingUtilities.IsResponseStatus(HttpStatusCode.Created, response.StatusCode);
         }
     }
 }

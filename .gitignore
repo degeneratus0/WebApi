@@ -6,3 +6,5 @@ obj/
 .vs/
 
 storage/
+TestResults/
+coveragereport/

@@ -8,7 +8,7 @@ namespace WebApiTests.DataModelTests
     public class DataModelNegativeTests : DataModelTestsBase
     {
         [Test]
-        public async Task GetDataModelByNonExistentId()
+        public async Task GetDataModelByIncorrectId()
         {
             int testId = -1;
 
@@ -28,7 +28,7 @@ namespace WebApiTests.DataModelTests
         }
 
         [Test]
-        public async Task PutDataModelOnNonExistentId()
+        public async Task PutDataModelByIncorrectId()
         {
             string testContent = "test";
             int testId = -1;
@@ -55,7 +55,7 @@ namespace WebApiTests.DataModelTests
         }
 
         [Test]
-        public async Task DeleteDataModelByNonExistentId()
+        public async Task DeleteDataModelByIncorrectId()
         {
             int testId = -1;
 

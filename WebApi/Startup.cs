@@ -24,7 +24,7 @@ namespace WebApi
 
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddTransient<IFile<DataModel, DataDTO>, FCFileWork>();
+            services.AddTransient<IFile<DataModel, DataModelDTO>, FileWork>();
 
             services.AddTransient<IData<Weighing>, WeighingsDBWork>();
             services.AddTransient<IData<Measure>, MeasuresDBWork>();
