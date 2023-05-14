@@ -23,13 +23,13 @@ jobs:
       run: dotnet build --configuration Debug --no-restore
       
     - name: Test
-      run: dotnet test --collect:"XPlat Code Coverage" --logger trx --results-directory "TestResults"
+      run: dotnet test --collect:"XPlat Code Coverage" --logger html --results-directory "TestResults"
         
     - name: ReportGenerator
       uses: danielpalme/ReportGenerator-GitHub-Action@5.1.20
       with:
         reports: TestResults/*/coverage.cobertura.xml
-        targetdir: TestResults
+        targetdir: coveragereport
         
     - name: Upload test results
       uses: actions/upload-artifact@v3
