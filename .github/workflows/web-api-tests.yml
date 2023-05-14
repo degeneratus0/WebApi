@@ -37,7 +37,7 @@ jobs:
         name: test-results
         path: |
           TestResults
-          !TestResults/coverage.cobertura.xml
+          !TestResults/*/coverage.cobertura.xml
       if: ${{ always() }}
       
     - name: Upload code coverage report
