@@ -49,7 +49,7 @@ namespace WebApi.Controllers
         [HttpPost]
         public ActionResult<string> Post([FromBody]string item)
         {
-            if (item == null)
+            if (item == null || item == string.Empty)
             {
                 return BadRequest();
             }
