@@ -47,9 +47,9 @@ namespace WebApi.Controllers
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [HttpPost]
-        public ActionResult<string> Post([FromBody]string item)
+        public ActionResult Post([FromBody]string item)
         {
-            if (item == null || item == string.Empty)
+            if (item == string.Empty)
             {
                 return BadRequest();
             }

@@ -58,7 +58,7 @@ namespace WebApi.Controllers
         [HttpPost]
         public ActionResult Post([FromBody]DataModelDTO item)
         {
-            if (item == null || item.Content == null)
+            if (item.Content == null)
             {
                 return BadRequest();
             }
@@ -71,7 +71,7 @@ namespace WebApi.Controllers
         [HttpPut("{id}")]
         public IActionResult Put(string id, [FromBody]DataModelDTO item)
         {
-            if (item == null || item.Content == null)
+            if (item.Content == null)
             {
                 return BadRequest();
             }

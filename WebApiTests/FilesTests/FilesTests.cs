@@ -28,10 +28,10 @@ namespace WebApiTests.FilesTests
                 );
         }
 
-        [TestCase(1, "text 1")]
-        [TestCase(2, "text 2")]
-        [TestCase(3, "text 3")]
-        public async Task GetFileById(int testId, string expectedContent)
+        [TestCase("1", "text 1")]
+        [TestCase("2", "text 2")]
+        [TestCase("3", "text 3")]
+        public async Task GetFileById(string testId, string expectedContent)
         {
             HttpResponseMessage response = await httpClient.GetAsync($"/api/files/{testId}");
             string responseContent = await response.Content.ReadAsStringAsync();
@@ -64,10 +64,33 @@ namespace WebApiTests.FilesTests
         }
 
         [Test]
+        public async Task PostFileWithEmptyContent()
+        {
+            string expectedId = "4";
+            DataModelDTO testDataModel = new DataModelDTO()
+            {
+                Content = string.Empty
+            };
+            StringContent testStringContent = TestingUtilities.CreateDefaultStringContent(testDataModel);
+
+            HttpResponseMessage response = await httpClient.PostAsync("/api/files", testStringContent);
+            string responseContent = await response.Content.ReadAsStringAsync();
+
+            TestingUtilities.IsResponseStatus(HttpStatusCode.Created, response.StatusCode);
+            Assert.AreEqual(JsonSerializer.Serialize(testDataModel).ToLower(), responseContent);
+
+            response = await httpClient.GetAsync($"/api/files/{expectedId}");
+            responseContent = await response.Content.ReadAsStringAsync();
+
+            TestingUtilities.IsResponseStatus(HttpStatusCode.OK, response.StatusCode);
+            Assert.AreEqual(testDataModel.Content, responseContent);
+        }
+
+        [Test]
         public async Task PutFile()
         {
             string testContent = "test";
-            int testId = 1;
+            string testId = "1";
             DataModelDTO testDataModel = new DataModelDTO()
             {
                 Content = testContent
@@ -83,7 +106,7 @@ namespace WebApiTests.FilesTests
         [Test]
         public async Task DeleteFile()
         {
-            int testId = 1;
+            string testId = "1";
 
             HttpResponseMessage response = await httpClient.DeleteAsync($"/api/files/{testId}");
 
@@ -97,7 +120,7 @@ namespace WebApiTests.FilesTests
         [Test]
         public async Task DeleteThenPostFile()
         {
-            int idToDelete = 1;
+            string idToDelete = "1";
 
             HttpResponseMessage response = await httpClient.DeleteAsync($"/api/files/{idToDelete}");
 

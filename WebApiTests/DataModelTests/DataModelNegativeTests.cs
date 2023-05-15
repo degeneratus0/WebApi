@@ -20,7 +20,7 @@ namespace WebApiTests.DataModelTests
         [Test]
         public async Task PostEmptyDataModel()
         {
-            StringContent emptyStringContent = new StringContent("", Encoding.UTF8, "application/json");
+            StringContent emptyStringContent = TestingUtilities.CreateDefaultStringContent("");
 
             HttpResponseMessage response = await httpClient.PostAsync("/api/DataModel", emptyStringContent);
 
