@@ -1,6 +1,6 @@
 using NUnit.Framework;
 using System.Net;
-using WebApi.Models;
+using WebApi.Models.DTOs;
 
 namespace WebApiTests.FilesTests
 {
@@ -24,7 +24,7 @@ namespace WebApiTests.FilesTests
             {
                 Content = null
             };
-            StringContent testStringContent = TestingUtilities.CreateDefaultStringContent(testDataModel);
+            StringContent testStringContent = TestingUtilities.CreateDefaultStringContentSerializeObject(testDataModel);
 
             HttpResponseMessage response = await httpClient.PostAsync("/api/files", testStringContent);
 
@@ -49,7 +49,7 @@ namespace WebApiTests.FilesTests
             {
                 Content = null
             };
-            StringContent testStringContent = TestingUtilities.CreateDefaultStringContent(testDataModel);
+            StringContent testStringContent = TestingUtilities.CreateDefaultStringContentSerializeObject(testDataModel);
 
             HttpResponseMessage response = await httpClient.PutAsync($"/api/files/{testId}", testStringContent);
 
@@ -75,7 +75,7 @@ namespace WebApiTests.FilesTests
             {
                 Content = "test"
             };
-            StringContent testStringContent = TestingUtilities.CreateDefaultStringContent(testDataModel);
+            StringContent testStringContent = TestingUtilities.CreateDefaultStringContentSerializeObject(testDataModel);
 
             HttpResponseMessage response = await httpClient.PutAsync($"/api/files/{testId}", testStringContent);
 

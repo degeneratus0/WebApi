@@ -3,6 +3,8 @@ using System.Net;
 using System.Net.Http.Json;
 using System.Text.Json;
 using WebApi.Models;
+using WebApi.Models.DTOs;
+using WebApi.Models.TestData;
 
 namespace WebApiTests.FilesTests
 {
@@ -11,12 +13,11 @@ namespace WebApiTests.FilesTests
         [Test]
         public async Task GetAllFiles()
         {
-            List<DataModel> expectedDataModels = new List<DataModel>()
+            List<DataModel> expectedDataModels = new List<DataModel>();
+            for (int i = 0; i < DataModelTestData.TestData.Count; i++)
             {
-                new DataModel() { Id = "1", Content = "text 1"},
-                new DataModel() { Id = "2", Content = "text 2"},
-                new DataModel() { Id = "3", Content = "text 3"}
-            };
+                expectedDataModels.Add(new DataModel() { Id = i.ToString(), Content = DataModelTestData.TestData[i] });
+            }
 
             HttpResponseMessage response = await httpClient.GetAsync("/api/files");
             List<DataModel>? responseContent = await response.Content.ReadFromJsonAsync<List<DataModel>>();
@@ -28,27 +29,25 @@ namespace WebApiTests.FilesTests
                 );
         }
 
-        [TestCase("1", "text 1")]
-        [TestCase("2", "text 2")]
-        [TestCase("3", "text 3")]
-        public async Task GetFileById(string testId, string expectedContent)
-        {
-            HttpResponseMessage response = await httpClient.GetAsync($"/api/files/{testId}");
+        [TestCaseSource(typeof(DataModelTestData), nameof(DataModelTestData.TestDataModels))]
+        public async Task GetFileById(DataModel testDataModel)
+        {   
+            HttpResponseMessage response = await httpClient.GetAsync($"/api/files/{testDataModel.Id}");
             string responseContent = await response.Content.ReadAsStringAsync();
 
             TestingUtilities.IsResponseStatus(HttpStatusCode.OK, response.StatusCode);
-            Assert.AreEqual(expectedContent, responseContent);
+            Assert.AreEqual(testDataModel.Content, responseContent);
         }
 
         [Test]
         public async Task PostFile()
         {
-            string expectedId = "4";
+            string expectedId = DataModelTestData.TestData.Count.ToString();
             DataModelDTO testDataModel = new DataModelDTO()
             {
-                Content = "text 4"
+                Content = "text"
             };
-            StringContent testStringContent = TestingUtilities.CreateDefaultStringContent(testDataModel);
+            StringContent testStringContent = TestingUtilities.CreateDefaultStringContentSerializeObject(testDataModel);
 
             HttpResponseMessage response = await httpClient.PostAsync("/api/files", testStringContent);
             string responseContent = await response.Content.ReadAsStringAsync();
@@ -66,12 +65,12 @@ namespace WebApiTests.FilesTests
         [Test]
         public async Task PostFileWithEmptyContent()
         {
-            string expectedId = "4";
+            string expectedId = DataModelTestData.TestData.Count.ToString();
             DataModelDTO testDataModel = new DataModelDTO()
             {
                 Content = string.Empty
             };
-            StringContent testStringContent = TestingUtilities.CreateDefaultStringContent(testDataModel);
+            StringContent testStringContent = TestingUtilities.CreateDefaultStringContentSerializeObject(testDataModel);
 
             HttpResponseMessage response = await httpClient.PostAsync("/api/files", testStringContent);
             string responseContent = await response.Content.ReadAsStringAsync();
@@ -95,18 +94,18 @@ namespace WebApiTests.FilesTests
             {
                 Content = testContent
             };
-            StringContent testStringContent = TestingUtilities.CreateDefaultStringContent(testDataModel);
+            StringContent testStringContent = TestingUtilities.CreateDefaultStringContentSerializeObject(testDataModel);
 
             HttpResponseMessage response = await httpClient.PutAsync($"/api/files/{testId}", testStringContent);
 
             TestingUtilities.IsResponseStatus(HttpStatusCode.NoContent, response.StatusCode);
-            await GetFileById(testId, testContent);
+            await GetFileById(new DataModel() { Id = testId, Content = testContent });
         }
 
         [Test]
         public async Task DeleteFile()
         {
-            string testId = "1";
+            string testId = "0";
 
             HttpResponseMessage response = await httpClient.DeleteAsync($"/api/files/{testId}");
 
@@ -120,7 +119,7 @@ namespace WebApiTests.FilesTests
         [Test]
         public async Task DeleteThenPostFile()
         {
-            string idToDelete = "1";
+            string idToDelete = "0";
 
             HttpResponseMessage response = await httpClient.DeleteAsync($"/api/files/{idToDelete}");
 
@@ -130,12 +129,12 @@ namespace WebApiTests.FilesTests
 
             TestingUtilities.IsResponseStatus(HttpStatusCode.NotFound, response.StatusCode);
 
-            string expectedId = "4";
+            string expectedId = DataModelTestData.TestData.Count.ToString();
             DataModelDTO testDataModel = new DataModelDTO()
             {
-                Content = "text 4"
+                Content = "text"
             };
-            StringContent testStringContent = TestingUtilities.CreateDefaultStringContent(testDataModel);
+            StringContent testStringContent = TestingUtilities.CreateDefaultStringContentSerializeObject(testDataModel);
 
             response = await httpClient.PostAsync("/api/files", testStringContent);
             string responseContent = await response.Content.ReadAsStringAsync();

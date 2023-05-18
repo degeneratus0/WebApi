@@ -12,10 +12,19 @@ namespace WebApiTests
             Assert.AreEqual(expected, actual, $"Response status code was not {expected}, but '{actual}'");
         }
 
-        public static StringContent CreateDefaultStringContent(object? value)
+        public static StringContent CreateDefaultStringContentSerializeObject(object? value)
         {
             return new StringContent(
                 JsonSerializer.Serialize(value),
+                Encoding.UTF8,
+                "application/json"
+                );
+        }
+
+        public static StringContent CreateDefaultStringContent(string value)
+        {
+            return new StringContent(
+                value,
                 Encoding.UTF8,
                 "application/json"
                 );
