@@ -1,10 +1,11 @@
 ﻿using System.Linq;
 using WebApi.Interfaces;
 using WebApi.Models;
+using WebApi.Models.DTOs;
 
 namespace WebApi.Services
 {
-    public class WeighingsConverter : IConverter<Weighing, WeighingDTO, WeighingDTOid>
+    internal class WeighingsConverter : IConverter<Weighing, WeighingDTO, WeighingDTOid>
     {
         WeighingsContext context;
 
@@ -28,7 +29,7 @@ namespace WebApi.Services
         {
             return new WeighingDTOid
             {
-                IDWeighing = weighing.IDWeighing,
+                Id = weighing.Id,
                 Item = weighing.Item,
                 Weight = weighing.Weight,
                 Measure = weighing.Measure.MeasureName,
@@ -42,7 +43,7 @@ namespace WebApi.Services
             {
                 Item = weighing.Item,
                 Weight = weighing.Weight,
-                IdMeasure = context.Measures.FirstOrDefault(x => x.MeasureName == weighing.Measure).IDMeasure,
+                Measure = context.Measures.Single(m => m.MeasureName == weighing.Measure),
                 TareType = weighing.TareType
             };
         }

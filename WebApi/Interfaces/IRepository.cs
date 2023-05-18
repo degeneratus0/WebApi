@@ -2,7 +2,7 @@
 
 namespace WebApi.Interfaces
 {
-    public interface IData<T>
+    public interface IRepository <T>
     {
         void Set();
         T Read(int id);

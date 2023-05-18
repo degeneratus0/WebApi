@@ -1,9 +1,10 @@
 ﻿using WebApi.Interfaces;
 using WebApi.Models;
+using WebApi.Models.DTOs;
 
 namespace WebApi.Services
 {
-    public class MeasuresConverter : IConverter<Measure, MeasureDTO, MeasureDTOid>
+    internal class MeasuresConverter : IConverter<Measure, MeasureDTO, MeasureDTOid>
     {
         public MeasureDTO AsDTO(Measure measure)
         {
@@ -17,7 +18,7 @@ namespace WebApi.Services
         {
             return new MeasureDTOid
             {
-                IDMeasure = measure.IDMeasure,
+                Id = measure.Id,
                 MeasureName = measure.MeasureName
             };
         }

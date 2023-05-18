@@ -2,7 +2,7 @@
 
 namespace WebApi.Models
 {
-    public class WeighingsContext : DbContext
+    internal class WeighingsContext : DbContext
     {
         public DbSet<Weighing> Weighings { get; set; }
         public DbSet<Measure> Measures { get; set; }
@@ -21,9 +21,9 @@ namespace WebApi.Models
                 .HasForeignKey(s => s.IdMeasure)
                 .OnDelete(DeleteBehavior.Cascade);
             modelBuilder.Entity<Measure>()
-                .HasKey(e => e.IDMeasure);
+                .HasKey(e => e.Id);
             modelBuilder.Entity<Weighing>()
-                .HasKey(e => e.IDWeighing);
+                .HasKey(e => e.Id);
         }
     }
 }

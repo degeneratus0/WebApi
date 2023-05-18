@@ -2,7 +2,7 @@
 {
     public class Weighing
     {
-        public int IDWeighing { get; set; }
+        public int Id { get; set; }
         public string Item { get; set; }
         public int Weight { get; set; }
         public int? IdMeasure { get; set; }

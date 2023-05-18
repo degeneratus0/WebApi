@@ -16,7 +16,14 @@ namespace WebApi.Controllers
         [Route("Set")]
         public ActionResult Set([FromBody]List<string> newContext)
         {
+            if (newContext.Count == 0)
+            {
+                context = new List<string>(DataModelTestData.TestData);
+            }
+            else
+            {
             context = newContext;
+            }
             return Created(Url.Action(), context);
         }
 

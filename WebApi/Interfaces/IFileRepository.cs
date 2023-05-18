@@ -2,7 +2,7 @@
 
 namespace WebApi.Interfaces
 {
-    public interface IFile<T, DTO>
+    public interface IFileRepository<T, DTO>
     {
         void Set(List<DTO> datas);
         void Clear();

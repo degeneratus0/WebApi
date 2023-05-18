@@ -3,13 +3,14 @@ using System.IO;
 using System.Text;
 using WebApi.Interfaces;
 using WebApi.Models;
+using WebApi.Models.DTOs;
 
 namespace WebApi.Services
 {
-    public class FileWork : IFile<DataModel, DataModelDTO>
+    internal class FileRepository : IFileRepository<DataModel, DataModelDTO>
     {
         private static string path = Directory.GetCurrentDirectory() + "\\storage\\";
-        private static int currentId = 1;
+        private static int currentId = 0;
 
         public void Set(List<DataModelDTO> datas)
         {
@@ -26,7 +27,7 @@ namespace WebApi.Services
             if (Directory.Exists(path))
             {
                 Directory.Delete(path, true);
-                currentId = 1;
+                currentId = 0;
             }
             else
             {

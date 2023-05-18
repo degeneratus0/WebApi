@@ -4,36 +4,37 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using WebApi.Interfaces;
 using WebApi.Models;
+using WebApi.Models.DTOs;
 
 namespace WebApi.Controllers
 {
-    [Produces("application/json")]
-    [Route("api/weighings")]
+    [Route("api/[controller]")]
     [ApiController]
     public class WeighingsController : ControllerBase
     {
-        IData<Weighing> Weighings;
-        IConverter<Weighing, WeighingDTO, WeighingDTOid> DTO;
+        private readonly IRepository<Weighing> Weighings;
+        private readonly IConverter<Weighing, WeighingDTO, WeighingDTOid> Converter;
 
-        public WeighingsController(IData<Weighing> weighings, IConverter<Weighing, WeighingDTO, WeighingDTOid> dto)
+        public WeighingsController(IRepository<Weighing> weighings, IConverter<Weighing, WeighingDTO, WeighingDTOid> converter)
         {
             Weighings = weighings;
             Weighings.Set();
-            DTO = dto;
+            Converter = converter;
         }
 
         [HttpGet]
         public IEnumerable<WeighingDTOid> Get()
         {
-            return Weighings.ReadAll().Select(DTO.AsDTOid);
+            return Weighings.ReadAll().Select(Converter.AsDTOid);
         }
         
         [HttpGet("{id}")]
         public IActionResult Get(int id)
         {
-            if (Weighings.Read(id) == null)
+            Weighing weighing = Weighings.Read(id);
+            if (weighing == null)
                 return NotFound();
-            return Ok(DTO.AsDTO(Weighings.Read(id)));
+            return Ok(Converter.AsDTO(weighing));
         }
 
         [HttpPost]
@@ -41,7 +42,7 @@ namespace WebApi.Controllers
         {
             try
             {
-                Weighings.Add(DTO.FromDTO(weighing));
+                Weighings.Add(Converter.FromDTO(weighing));
                 return Ok(weighing);
             }
             catch
@@ -61,8 +62,8 @@ namespace WebApi.Controllers
             }
             try
             {
-                Weighings.Edit(id, DTO.FromDTO(weighing));
-                return Ok(weighing);
+                Weighings.Edit(id, Converter.FromDTO(weighing));
+                return NoContent();
             }
             catch
             {

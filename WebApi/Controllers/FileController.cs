@@ -3,6 +3,8 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using WebApi.Interfaces;
 using WebApi.Models;
+using WebApi.Models.DTOs;
+using WebApi.Models.TestData;
 
 namespace WebApi.Controllers
 {
@@ -10,23 +12,33 @@ namespace WebApi.Controllers
     [ApiController]
     public class FileController : ControllerBase
     {
-        private readonly IFile<DataModel, DataModelDTO> fileWork;
+        private readonly IFileRepository<DataModel, DataModelDTO> fileRepository;
 
-        public FileController(IFile<DataModel, DataModelDTO> fileWork)
+        public FileController(IFileRepository<DataModel, DataModelDTO> fileWork)
         {
-            this.fileWork = fileWork;
+            this.fileRepository = fileWork;
         }
 
         [HttpPost]
         [Route("Set")]
         public ActionResult Set([FromBody]List<string> stringDatas)
         {
+            List<string> stringDatasToSet;
+            if (stringDatas.Count == 0)
+            {
+                stringDatasToSet = new List<string>(DataModelTestData.TestData);
+            }
+            else
+            {
+                stringDatasToSet = stringDatas;
+            }
+
             List<DataModelDTO> datas = new List<DataModelDTO>();
-            foreach (string stringData in stringDatas)
+            foreach (string stringData in stringDatasToSet)
             {
                 datas.Add(new DataModelDTO() { Content = stringData });
             }
-            fileWork.Set(datas);
+            fileRepository.Set(datas);
             return Created(Url.Action(), datas);
         }
 
@@ -34,20 +46,20 @@ namespace WebApi.Controllers
         [Route("Clear")]
         public ActionResult Clear()
         {
-            fileWork.Clear();
+            fileRepository.Clear();
             return NoContent();
         }
 
         [HttpGet]
         public IEnumerable<DataModel> Get()
         {
-            return fileWork.ReadAll();
+            return fileRepository.ReadAll();
         }
 
         [HttpGet("{id}")]
         public ActionResult<string> Get(string id)
         {
-            string result = fileWork.Read(id);
+            string result = fileRepository.Read(id);
             if (result == null)
             {
                 return NotFound();
@@ -62,7 +74,7 @@ namespace WebApi.Controllers
             {
                 return BadRequest();
             }
-            fileWork.Add(item);
+            fileRepository.Add(item);
             return Created(Url.Action(), item);
         }
 
@@ -75,11 +87,11 @@ namespace WebApi.Controllers
             {
                 return BadRequest();
             }
-            if (fileWork.Read(id) == null)
+            if (fileRepository.Read(id) == null)
             {
                 return NotFound();
             }
-            fileWork.Edit(id, item);
+            fileRepository.Edit(id, item);
             return NoContent();
         }
 
@@ -88,11 +100,11 @@ namespace WebApi.Controllers
         [HttpDelete("{id}")]
         public IActionResult Delete(string id)
         {
-            if (fileWork.Read(id) == null)
+            if (fileRepository.Read(id) == null)
             {
                 return NotFound();
             }
-            fileWork.Delete(id);
+            fileRepository.Delete(id);
             return NoContent();
         }
     }

@@ -4,27 +4,29 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using WebApi.Interfaces;
 using WebApi.Models;
+using WebApi.Models.DTOs;
 
 namespace WebApi.Controllers
 {
-    [Route("api/measures")]
+    [Route("api/[controller]")]
     [ApiController]
     public class MeasuresController : ControllerBase
     {
-        IData<Measure> Measures;
-        IConverter<Measure, MeasureDTO, MeasureDTOid> DTO;
+        private readonly IRepository<Measure> Measures;
+        private readonly IConverter<Measure, MeasureDTO, MeasureDTOid> Converter;
 
-        public MeasuresController(IData<Measure> measures, IConverter<Measure, MeasureDTO, MeasureDTOid> dto)
+        public MeasuresController(IRepository<Measure> measures, IConverter<Measure, MeasureDTO, MeasureDTOid> converter)
         {
             Measures = measures;
+            Converter = converter;
+
             Measures.Set();
-            DTO = dto;
         }
 
         [HttpGet]
         public IEnumerable<MeasureDTOid> Get()
         {
-            return Measures.ReadAll().Select(DTO.AsDTOid);
+            return Measures.ReadAll().Select(Converter.AsDTOid);
         }
 
         [HttpGet("{id}")]
@@ -32,7 +34,7 @@ namespace WebApi.Controllers
         {
             if (Measures.Read(id) == null)
                 return NotFound();
-            return Ok(DTO.AsDTO(Measures.Read(id)));
+            return Ok(Converter.AsDTO(Measures.Read(id)));
         }
         
         [HttpPost]
@@ -42,7 +44,7 @@ namespace WebApi.Controllers
             {
                 return BadRequest();
             }
-            Measures.Add(DTO.FromDTO(measure));
+            Measures.Add(Converter.FromDTO(measure));
             return Ok(measure);
         }
 
@@ -59,7 +61,7 @@ namespace WebApi.Controllers
             {
                 return NotFound();
             }
-            Measures.Edit(id, DTO.FromDTO(measure));
+            Measures.Edit(id, Converter.FromDTO(measure));
             return Ok(measure);
         }
 

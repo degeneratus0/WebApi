@@ -2,7 +2,6 @@ using System;
 using System.IO;
 using System.Reflection;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -10,10 +9,11 @@ using WebApi.Models;
 using Microsoft.OpenApi.Models;
 using WebApi.Interfaces;
 using WebApi.Services;
+using WebApi.Models.DTOs;
 
 namespace WebApi
 {
-    public class Startup
+    internal class Startup
     {
         public Startup(IConfiguration configuration)
         {
@@ -22,12 +22,12 @@ namespace WebApi
 
         public IConfiguration Configuration { get; }
 
-        public void ConfigureServices(IServiceCollection services)
+        public static void ConfigureServices(IServiceCollection services)
         {
-            services.AddTransient<IFile<DataModel, DataModelDTO>, FileWork>();
+            services.AddScoped<IFileRepository<DataModel, DataModelDTO>, FileRepository>();
 
-            services.AddTransient<IData<Weighing>, WeighingsDBWork>();
-            services.AddTransient<IData<Measure>, MeasuresDBWork>();
+            services.AddScoped<IRepository<Weighing>, WeighingsRepository>();
+            services.AddScoped<IRepository<Measure>, MeasuresRepository>();
 
             services.AddTransient<IConverter<Weighing, WeighingDTO, WeighingDTOid>, WeighingsConverter>();
             services.AddTransient<IConverter<Measure, MeasureDTO, MeasureDTOid>, MeasuresConverter>();
@@ -38,18 +38,19 @@ namespace WebApi
             services.AddControllers();
             services.AddSwaggerGen(c =>
             {
-                c.SwaggerDoc("v1", new OpenApiInfo
+                c.SwaggerDoc("v0.1", new OpenApiInfo
                 {
                     Title = "WebApi",
-                    Version = "v1",
+                    Version = "v0.1",
+                    Description = "A Web API with controllers implementing CRUD operations in different ways (i.e. in-memory list, static files, database)"
                 });
                 var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
                 var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
-                c.IncludeXmlComments(xmlPath);
+                c.IncludeXmlComments(xmlPath, true);
             });
         }
 
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public static void Configure(IApplicationBuilder app)
         {
             app.UseDeveloperExceptionPage();
             app.UseRouting();
@@ -57,7 +58,7 @@ namespace WebApi
             app.UseSwagger();
             app.UseSwaggerUI(c =>
             {
-                c.SwaggerEndpoint("/swagger/v1/swagger.json", "WebApi v1");
+                c.SwaggerEndpoint("/swagger/v0.1/swagger.json", "WebApi v0.1");
                 c.RoutePrefix = string.Empty;
             });
 

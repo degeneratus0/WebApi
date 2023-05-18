@@ -1,7 +1,8 @@
-﻿namespace WebApi.Models
+﻿namespace WebApi.Models.DTOs
 {
-    public class WeighingDTO
+    public class WeighingDTOid
     {
+        public int Id { get; set; }
         public string Item { get; set; }
         public int Weight { get; set; }
         public string Measure { get; set; }
