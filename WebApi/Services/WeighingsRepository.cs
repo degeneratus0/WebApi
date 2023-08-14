@@ -1,8 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Linq;
-using WebApi.Interfaces;
 using WebApi.Models;
+using WebApi.Services.Interfaces;
 
 namespace WebApi.Services
 {
@@ -10,26 +10,9 @@ namespace WebApi.Services
     {
         private readonly WeighingsContext context;
 
-
         public WeighingsRepository(WeighingsContext context)
         {
             this.context = context;
-        }
-
-        public void Set()
-        {
-            if (!context.Weighings.Any())
-            {
-                if (!context.Measures.Any())
-                {
-                    context.Measures.Add(new Measure { MeasureName = "g" });
-                    context.Measures.Add(new Measure { MeasureName = "kg" });
-                    context.SaveChanges();
-                }
-                context.Weighings.Add(new Weighing { Item = "Juice", Weight = 200, IdMeasure = 1, TareType = "Box" });
-                context.Weighings.Add(new Weighing { Item = "Lemonade", Weight = 1, IdMeasure = 2, TareType = "Bottle" });
-                context.SaveChanges();
-            }
         }
 
         public IEnumerable<Weighing> ReadAll()

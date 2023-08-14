@@ -2,9 +2,9 @@
 using System.Linq;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using WebApi.Interfaces;
 using WebApi.Models;
 using WebApi.Models.DTOs;
+using WebApi.Services.Interfaces;
 
 namespace WebApi.Controllers
 {
@@ -12,29 +12,27 @@ namespace WebApi.Controllers
     [ApiController]
     public class MeasuresController : ControllerBase
     {
-        private readonly IRepository<Measure> Measures;
-        private readonly IConverter<Measure, MeasureDTO, MeasureDTOid> Converter;
+        private readonly IRepository<Measure> _measures;
+        private readonly IConverter<Measure, MeasureDTO, MeasureDTOid> _converter;
 
-        public MeasuresController(IRepository<Measure> measures, IConverter<Measure, MeasureDTO, MeasureDTOid> converter)
+        public MeasuresController(IRepository<Measure> repository, IConverter<Measure, MeasureDTO, MeasureDTOid> converter)
         {
-            Measures = measures;
-            Converter = converter;
-
-            Measures.Set();
+            _measures = repository;
+            _converter = converter;
         }
 
         [HttpGet]
         public IEnumerable<MeasureDTOid> Get()
         {
-            return Measures.ReadAll().Select(Converter.AsDTOid);
+            return _measures.ReadAll().Select(_converter.AsDTOid);
         }
 
         [HttpGet("{id}")]
         public IActionResult Get(int id)
         {
-            if (Measures.Read(id) == null)
+            if (_measures.Read(id) == null)
                 return NotFound();
-            return Ok(Converter.AsDTO(Measures.Read(id)));
+            return Ok(_converter.AsDTO(_measures.Read(id)));
         }
         
         [HttpPost]
@@ -44,7 +42,7 @@ namespace WebApi.Controllers
             {
                 return BadRequest();
             }
-            Measures.Add(Converter.FromDTO(measure));
+            _measures.Add(_converter.FromDTO(measure));
             return Ok(measure);
         }
 
@@ -57,11 +55,11 @@ namespace WebApi.Controllers
             {
                 return BadRequest();
             }
-            if (Measures.Read(id) == null)
+            if (_measures.Read(id) == null)
             {
                 return NotFound();
             }
-            Measures.Edit(id, Converter.FromDTO(measure));
+            _measures.Edit(id, _converter.FromDTO(measure));
             return Ok(measure);
         }
 
@@ -70,11 +68,11 @@ namespace WebApi.Controllers
         [HttpDelete("{id}")]
         public IActionResult Delete(int id)
         {
-            if (Measures.Read(id) == null)
+            if (_measures.Read(id) == null)
             {
                 return NotFound();
             }
-            Measures.Delete(id);
+            _measures.Delete(id);
             return NoContent();
         }
     }

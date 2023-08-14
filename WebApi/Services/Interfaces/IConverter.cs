@@ -1,4 +1,4 @@
-﻿namespace WebApi.Interfaces
+﻿namespace WebApi.Services.Interfaces
 {
     public interface IConverter<T, DTO, DTOid>
     {

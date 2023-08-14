@@ -1,10 +1,10 @@
 ﻿using System.Collections.Generic;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using WebApi.Interfaces;
 using WebApi.Models;
 using WebApi.Models.DTOs;
 using WebApi.Models.TestData;
+using WebApi.Services.Interfaces;
 
 namespace WebApi.Controllers
 {
@@ -12,11 +12,11 @@ namespace WebApi.Controllers
     [ApiController]
     public class FileController : ControllerBase
     {
-        private readonly IFileRepository<DataModel, DataModelDTO> fileRepository;
+        private readonly IFileRepository<DataModel, DataModelDTO> _files;
 
-        public FileController(IFileRepository<DataModel, DataModelDTO> fileWork)
+        public FileController(IFileRepository<DataModel, DataModelDTO> repository)
         {
-            this.fileRepository = fileWork;
+            _files = repository;
         }
 
         [HttpPost]
@@ -38,7 +38,7 @@ namespace WebApi.Controllers
             {
                 datas.Add(new DataModelDTO() { Content = stringData });
             }
-            fileRepository.Set(datas);
+            _files.Set(datas);
             return Created(Url.Action(), datas);
         }
 
@@ -46,20 +46,20 @@ namespace WebApi.Controllers
         [Route("Clear")]
         public ActionResult Clear()
         {
-            fileRepository.Clear();
+            _files.Clear();
             return NoContent();
         }
 
         [HttpGet]
         public IEnumerable<DataModel> Get()
         {
-            return fileRepository.ReadAll();
+            return _files.ReadAll();
         }
 
         [HttpGet("{id}")]
         public ActionResult<string> Get(string id)
         {
-            string result = fileRepository.Read(id);
+            string result = _files.Read(id);
             if (result == null)
             {
                 return NotFound();
@@ -74,7 +74,7 @@ namespace WebApi.Controllers
             {
                 return BadRequest();
             }
-            fileRepository.Add(item);
+            _files.Add(item);
             return Created(Url.Action(), item);
         }
 
@@ -87,11 +87,11 @@ namespace WebApi.Controllers
             {
                 return BadRequest();
             }
-            if (fileRepository.Read(id) == null)
+            if (_files.Read(id) == null)
             {
                 return NotFound();
             }
-            fileRepository.Edit(id, item);
+            _files.Edit(id, item);
             return NoContent();
         }
 
@@ -100,11 +100,11 @@ namespace WebApi.Controllers
         [HttpDelete("{id}")]
         public IActionResult Delete(string id)
         {
-            if (fileRepository.Read(id) == null)
+            if (_files.Read(id) == null)
             {
                 return NotFound();
             }
-            fileRepository.Delete(id);
+            _files.Delete(id);
             return NoContent();
         }
     }

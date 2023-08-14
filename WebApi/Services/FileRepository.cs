@@ -1,9 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 using System.Text;
-using WebApi.Interfaces;
 using WebApi.Models;
 using WebApi.Models.DTOs;
+using WebApi.Services.Interfaces;
 
 namespace WebApi.Services
 {

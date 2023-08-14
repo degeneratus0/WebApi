@@ -1,7 +1,8 @@
-﻿using System.Linq;
-using WebApi.Interfaces;
+﻿using System;
+using System.Linq;
 using WebApi.Models;
 using WebApi.Models.DTOs;
+using WebApi.Services.Interfaces;
 
 namespace WebApi.Services
 {
@@ -39,13 +40,20 @@ namespace WebApi.Services
 
         public Weighing FromDTO(WeighingDTO weighing)
         {
-            return new Weighing
+            try
             {
-                Item = weighing.Item,
-                Weight = weighing.Weight,
-                Measure = context.Measures.Single(m => m.MeasureName == weighing.Measure),
-                TareType = weighing.TareType
-            };
+                return new Weighing
+                {
+                    Item = weighing.Item,
+                    Weight = weighing.Weight,
+                    Measure = context.Measures.Single(m => m.MeasureName == weighing.Measure),
+                    TareType = weighing.TareType
+                };
+            }
+            catch (InvalidOperationException e)
+            {
+                throw new InvalidOperationException($"Measure with name '{weighing.Measure}' was not found", e);
+            }
         }
     }
 }

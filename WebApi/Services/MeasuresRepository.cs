@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using WebApi.Interfaces;
 using WebApi.Models;
+using WebApi.Services.Interfaces;
 
 namespace WebApi.Services
 {
@@ -12,16 +12,6 @@ namespace WebApi.Services
         public MeasuresRepository(WeighingsContext context)
         {
             this.context = context;
-        }
-
-        public void Set()
-        {
-            if (!context.Measures.Any())
-            {
-                context.Measures.Add(new Measure { MeasureName = "g" });
-                context.Measures.Add(new Measure { MeasureName = "kg" });
-                context.SaveChanges();
-            }
         }
 
         public IEnumerable<Measure> ReadAll()

@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace WebApi.Interfaces
+namespace WebApi.Services.Interfaces
 {
     public interface IFileRepository<T, DTO>
     {

@@ -1,10 +1,9 @@
 ﻿using System.Collections.Generic;
 
-namespace WebApi.Interfaces
+namespace WebApi.Services.Interfaces
 {
-    public interface IRepository <T>
+    public interface IRepository<T>
     {
-        void Set();
         T Read(int id);
         IEnumerable<T> ReadAll();
         void Add(T obj);

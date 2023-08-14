@@ -2,9 +2,9 @@
 using System.Linq;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using WebApi.Interfaces;
 using WebApi.Models;
 using WebApi.Models.DTOs;
+using WebApi.Services.Interfaces;
 
 namespace WebApi.Controllers
 {
@@ -12,29 +12,28 @@ namespace WebApi.Controllers
     [ApiController]
     public class WeighingsController : ControllerBase
     {
-        private readonly IRepository<Weighing> Weighings;
-        private readonly IConverter<Weighing, WeighingDTO, WeighingDTOid> Converter;
+        private readonly IRepository<Weighing> _weighings;
+        private readonly IConverter<Weighing, WeighingDTO, WeighingDTOid> _converter;
 
-        public WeighingsController(IRepository<Weighing> weighings, IConverter<Weighing, WeighingDTO, WeighingDTOid> converter)
+        public WeighingsController(IRepository<Weighing> repository, IConverter<Weighing, WeighingDTO, WeighingDTOid> converter)
         {
-            Weighings = weighings;
-            Weighings.Set();
-            Converter = converter;
+            _weighings = repository;
+            _converter = converter;
         }
 
         [HttpGet]
         public IEnumerable<WeighingDTOid> Get()
         {
-            return Weighings.ReadAll().Select(Converter.AsDTOid);
+            return _weighings.ReadAll().Select(_converter.AsDTOid);
         }
         
         [HttpGet("{id}")]
         public IActionResult Get(int id)
         {
-            Weighing weighing = Weighings.Read(id);
+            Weighing weighing = _weighings.Read(id);
             if (weighing == null)
                 return NotFound();
-            return Ok(Converter.AsDTO(weighing));
+            return Ok(_converter.AsDTO(weighing));
         }
 
         [HttpPost]
@@ -42,7 +41,7 @@ namespace WebApi.Controllers
         {
             try
             {
-                Weighings.Add(Converter.FromDTO(weighing));
+                _weighings.Add(_converter.FromDTO(weighing));
                 return Ok(weighing);
             }
             catch
@@ -56,13 +55,13 @@ namespace WebApi.Controllers
         [HttpPut]
         public IActionResult Put(int id, WeighingDTO weighing)
         {
-            if (Weighings.Read(id) == null)
+            if (_weighings.Read(id) == null)
             {
                 return NotFound();
             }
             try
             {
-                Weighings.Edit(id, Converter.FromDTO(weighing));
+                _weighings.Edit(id, _converter.FromDTO(weighing));
                 return NoContent();
             }
             catch
@@ -76,11 +75,11 @@ namespace WebApi.Controllers
         [HttpDelete("{id}")]
         public IActionResult Delete(int id)
         {
-            if (Weighings.Read(id) == null)
+            if (_weighings.Read(id) == null)
             {
                 return NotFound();
             }
-            Weighings.Delete(id);
+            _weighings.Delete(id);
             return NoContent();
         }
     }

@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using WebApi.Models.TestData;
 
 namespace WebApi.Models
 {
@@ -24,6 +25,12 @@ namespace WebApi.Models
                 .HasKey(e => e.Id);
             modelBuilder.Entity<Weighing>()
                 .HasKey(e => e.Id);
+            modelBuilder.Entity<Measure>().HasData(
+                WeighingsTestData.TestMeasures
+                );
+            modelBuilder.Entity<Weighing>().HasData(
+                WeighingsTestData.TestWeighings
+                );
         }
     }
 }

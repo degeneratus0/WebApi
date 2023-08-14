@@ -1,6 +1,6 @@
-﻿using WebApi.Interfaces;
-using WebApi.Models;
+﻿using WebApi.Models;
 using WebApi.Models.DTOs;
+using WebApi.Services.Interfaces;
 
 namespace WebApi.Services
 {

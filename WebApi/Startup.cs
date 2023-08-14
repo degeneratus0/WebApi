@@ -7,9 +7,9 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using WebApi.Models;
 using Microsoft.OpenApi.Models;
-using WebApi.Interfaces;
 using WebApi.Services;
 using WebApi.Models.DTOs;
+using WebApi.Services.Interfaces;
 
 namespace WebApi
 {
@@ -32,7 +32,6 @@ namespace WebApi
             services.AddTransient<IConverter<Weighing, WeighingDTO, WeighingDTOid>, WeighingsConverter>();
             services.AddTransient<IConverter<Measure, MeasureDTO, MeasureDTOid>, MeasuresConverter>();
 
-            //string con = "server=127.0.0.1; port=3306; database=weighings; user=root; password=root";
             services.AddDbContext<WeighingsContext>(options => options.UseInMemoryDatabase("weighings"));
 
             services.AddControllers();
@@ -44,8 +43,8 @@ namespace WebApi
                     Version = "v0.1",
                     Description = "A Web API with controllers implementing CRUD operations in different ways (i.e. in-memory list, static files, database)"
                 });
-                var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
-                var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+                string xmlFile = Assembly.GetExecutingAssembly().GetName().Name + ".xml";
+                string xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
                 c.IncludeXmlComments(xmlPath, true);
             });
         }
@@ -62,10 +61,7 @@ namespace WebApi
                 c.RoutePrefix = string.Empty;
             });
 
-            app.UseEndpoints(endpoints =>
-            {
-                endpoints.MapControllers();
-            });
+            app.UseEndpoints(endpoints => endpoints.MapControllers());
         }
     }
 }
