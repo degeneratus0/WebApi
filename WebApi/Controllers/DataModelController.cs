@@ -81,17 +81,23 @@ namespace WebApi.Controllers
         /// </summary>
         /// <param name="dataModel">Data Model to add</param>
         /// <response code="201">Data Model successfully created</response>
-        /// <response code="400">Data Model with specified id already exists</response>
+        /// <response code="400">Specified content was incorrect</response>
+        /// <response code="409">Data Model with specified id already exists</response>
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status409Conflict)]
         [HttpPost]
-        public IActionResult Post([FromBody] DataModel dataModel)
+        public IActionResult Post([FromBody]DataModel dataModel)
         {
+            if (dataModel.Content == "")
+            {
+                return BadRequest();
+            }
             lock (_context)
             {
                 if (_context.FirstOrDefault(x => x.Id == dataModel.Id) != null)
                 {
-                    return BadRequest();
+                    return Conflict();
                 }
                 _context.Add(dataModel);
             }
@@ -104,12 +110,18 @@ namespace WebApi.Controllers
         /// <param name="id">Id of the Data Model to update</param>
         /// <param name="content">Content for update</param>
         /// <response code="204">Data Model successfully updated</response>
+        /// <response code="400">Specified content was incorrect</response>
         /// <response code="404">Data Model not found</response>
         [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [HttpPut("{id}")]
-        public IActionResult Put(string id, [FromBody] string content)
+        public IActionResult Put(string id, [FromBody]string content)
         {
+            if (content == "")
+            {
+                return BadRequest();
+            }
             lock (_context)
             {
                 DataModel dataModel = _context.FirstOrDefault(x => x.Id == id);

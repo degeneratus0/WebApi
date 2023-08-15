@@ -1,7 +1,6 @@
 using NUnit.Framework;
 using System.Net;
-using System.Text;
-using System.Text.Json;
+using WebApi.Models;
 
 namespace WebApiTests.DataModelTests
 {
@@ -10,11 +9,11 @@ namespace WebApiTests.DataModelTests
         [Test]
         public async Task GetDataModelByIncorrectId()
         {
-            int testId = -1;
+            string testId = "_";
 
             HttpResponseMessage response = await httpClient.GetAsync($"/api/DataModel/{testId}");
 
-            TestingUtilities.IsResponseStatus(HttpStatusCode.BadRequest, response.StatusCode);
+            TestingUtilities.IsResponseStatus(HttpStatusCode.NotFound, response.StatusCode);
         }
 
         [Test]
@@ -28,26 +27,33 @@ namespace WebApiTests.DataModelTests
         }
 
         [Test]
-        public async Task PutDataModelByIncorrectId()
+        public async Task PostDataModelOnExistingId()
+        {
+            DataModel testDataModel = new DataModel { Id = "0", Content = "test" };
+            StringContent testStringContent = TestingUtilities.CreateDefaultStringContentSerializeObject(testDataModel);
+
+            HttpResponseMessage response = await httpClient.PostAsync("/api/DataModel", testStringContent);
+
+            TestingUtilities.IsResponseStatus(HttpStatusCode.Conflict, response.StatusCode);
+        }
+
+        [Test]
+        public async Task PutDataModelByNonExistentId()
         {
             string testContent = "test";
-            int testId = -1;
-            StringContent testStringContent = new StringContent(
-                JsonSerializer.Serialize(testContent),
-                Encoding.UTF8,
-                "application/json"
-                );
+            string testId = "_";
+            StringContent testStringContent = TestingUtilities.CreateDefaultStringContentSerializeObject(testContent);
 
             HttpResponseMessage response = await httpClient.PutAsync($"/api/DataModel/{testId}", testStringContent);
 
-            TestingUtilities.IsResponseStatus(HttpStatusCode.BadRequest, response.StatusCode);
+            TestingUtilities.IsResponseStatus(HttpStatusCode.NotFound, response.StatusCode);
         }
 
         [Test]
         public async Task PutEmptyDataModel()
         {
-            int testId = 0;
-            StringContent testStringContent = new StringContent("", Encoding.UTF8, "application/json");
+            string testId = "0";
+            StringContent testStringContent = TestingUtilities.CreateDefaultStringContentSerializeObject("");
 
             HttpResponseMessage response = await httpClient.PutAsync($"/api/DataModel/{testId}", testStringContent);
 
@@ -57,11 +63,11 @@ namespace WebApiTests.DataModelTests
         [Test]
         public async Task DeleteDataModelByIncorrectId()
         {
-            int testId = -1;
+            string testId = "_";
 
             HttpResponseMessage response = await httpClient.DeleteAsync($"/api/DataModel/{testId}");
 
-            TestingUtilities.IsResponseStatus(HttpStatusCode.BadRequest, response.StatusCode);
+            TestingUtilities.IsResponseStatus(HttpStatusCode.NotFound, response.StatusCode);
         }
     }
 }
