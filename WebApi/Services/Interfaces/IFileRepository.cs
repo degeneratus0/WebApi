@@ -6,7 +6,7 @@ namespace WebApi.Services.Interfaces
     {
         void Set(List<DTO> datas);
         void Clear();
-        string Read(string id);
+        DTO Read(string id);
         IEnumerable<T> ReadAll();
         void Add(DTO data);
         void Edit(string id, DTO data);

@@ -10,7 +10,7 @@ namespace WebApiTests.FilesTests
         [Test]
         public async Task GetFileByNonExistentId()
         {
-            string testId = "nonexistentid";
+            string testId = "_";
 
             HttpResponseMessage response = await httpClient.GetAsync($"/api/files/{testId}");
             
@@ -34,7 +34,7 @@ namespace WebApiTests.FilesTests
         [Test]
         public async Task PostFileWithIncorrectType()
         {
-            StringContent testStringContent = TestingUtilities.CreateDefaultStringContent("incorrecttype");
+            StringContent testStringContent = TestingUtilities.CreateDefaultStringContent("_");
 
             HttpResponseMessage response = await httpClient.PostAsync("/api/files", testStringContent);
 
@@ -60,7 +60,7 @@ namespace WebApiTests.FilesTests
         public async Task PutFileWithIncorrectType()
         {
             string testId = "1";
-            StringContent testStringContent = TestingUtilities.CreateDefaultStringContent("incorrecttype");
+            StringContent testStringContent = TestingUtilities.CreateDefaultStringContent("_");
 
             HttpResponseMessage response = await httpClient.PutAsync($"/api/files/{testId}", testStringContent);
 
@@ -70,7 +70,7 @@ namespace WebApiTests.FilesTests
         [Test]
         public async Task PutFileByNonExistentId()
         {
-            string testId = "nonexistentid";
+            string testId = "_";
             DataModelDTO testDataModel = new DataModelDTO()
             {
                 Content = "test"
@@ -85,7 +85,7 @@ namespace WebApiTests.FilesTests
         [Test]
         public async Task DeleteFileByNonExistentId()
         {
-            string testId = "nonexistentid";
+            string testId = "_";
 
             HttpResponseMessage response = await httpClient.DeleteAsync($"/api/files/{testId}");
 

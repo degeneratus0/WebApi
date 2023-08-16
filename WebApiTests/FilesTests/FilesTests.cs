@@ -14,9 +14,9 @@ namespace WebApiTests.FilesTests
         public async Task GetAllFiles()
         {
             List<DataModel> expectedDataModels = new List<DataModel>();
-            for (int i = 0; i < DataModelTestData.TestData.Count; i++)
+            for (int i = 0; i < DataModelTestData.TestDataModels.Count; i++)
             {
-                expectedDataModels.Add(new DataModel() { Id = i.ToString(), Content = DataModelTestData.TestData[i] });
+                expectedDataModels.Add(new DataModel() { Id = i.ToString(), Content = DataModelTestData.TestDataModels[i].Content });
             }
 
             HttpResponseMessage response = await httpClient.GetAsync("/api/files");
@@ -31,58 +31,61 @@ namespace WebApiTests.FilesTests
 
         [TestCaseSource(typeof(DataModelTestData), nameof(DataModelTestData.TestDataModels))]
         public async Task GetFileById(DataModel testDataModel)
-        {   
+        {
             HttpResponseMessage response = await httpClient.GetAsync($"/api/files/{testDataModel.Id}");
             string responseContent = await response.Content.ReadAsStringAsync();
+            DataModelDTO expectedDataModel = new DataModelDTO(testDataModel);
 
             TestingUtilities.IsResponseStatus(HttpStatusCode.OK, response.StatusCode);
-            Assert.AreEqual(testDataModel.Content, responseContent);
+            Assert.AreEqual(JsonSerializer.Serialize(expectedDataModel).ToLower(), responseContent);
         }
 
         [Test]
         public async Task PostFile()
         {
-            string expectedId = DataModelTestData.TestData.Count.ToString();
+            string expectedId = DataModelTestData.TestDataModels.Count.ToString();
             DataModelDTO testDataModel = new DataModelDTO()
             {
                 Content = "text"
             };
-            StringContent testStringContent = TestingUtilities.CreateDefaultStringContentSerializeObject(testDataModel);
+            string testDataModelJson = JsonSerializer.Serialize(testDataModel).ToLower();
+            StringContent testStringContent = TestingUtilities.CreateDefaultStringContent(testDataModelJson);
 
             HttpResponseMessage response = await httpClient.PostAsync("/api/files", testStringContent);
             string responseContent = await response.Content.ReadAsStringAsync();
 
             TestingUtilities.IsResponseStatus(HttpStatusCode.Created, response.StatusCode);
-            Assert.AreEqual(JsonSerializer.Serialize(testDataModel).ToLower(), responseContent);
+            Assert.AreEqual(testDataModelJson, responseContent);
 
             response = await httpClient.GetAsync($"/api/files/{expectedId}");
             responseContent = await response.Content.ReadAsStringAsync();
 
             TestingUtilities.IsResponseStatus(HttpStatusCode.OK, response.StatusCode);
-            Assert.AreEqual(testDataModel.Content, responseContent);
+            Assert.AreEqual(testDataModelJson, responseContent);
         }
 
         [Test]
         public async Task PostFileWithEmptyContent()
         {
-            string expectedId = DataModelTestData.TestData.Count.ToString();
+            string expectedId = DataModelTestData.TestDataModels.Count.ToString();
             DataModelDTO testDataModel = new DataModelDTO()
             {
-                Content = string.Empty
+                Content = String.Empty
             };
-            StringContent testStringContent = TestingUtilities.CreateDefaultStringContentSerializeObject(testDataModel);
+            string testDataModelJson = JsonSerializer.Serialize(testDataModel).ToLower();
+            StringContent testStringContent = TestingUtilities.CreateDefaultStringContent(testDataModelJson);
 
             HttpResponseMessage response = await httpClient.PostAsync("/api/files", testStringContent);
             string responseContent = await response.Content.ReadAsStringAsync();
 
             TestingUtilities.IsResponseStatus(HttpStatusCode.Created, response.StatusCode);
-            Assert.AreEqual(JsonSerializer.Serialize(testDataModel).ToLower(), responseContent);
+            Assert.AreEqual(testDataModelJson, responseContent);
 
             response = await httpClient.GetAsync($"/api/files/{expectedId}");
             responseContent = await response.Content.ReadAsStringAsync();
 
             TestingUtilities.IsResponseStatus(HttpStatusCode.OK, response.StatusCode);
-            Assert.AreEqual(testDataModel.Content, responseContent);
+            Assert.AreEqual(testDataModelJson, responseContent);
         }
 
         [Test]
@@ -119,6 +122,7 @@ namespace WebApiTests.FilesTests
         [Test]
         public async Task DeleteThenPostFile()
         {
+            //<- Deletion
             string idToDelete = "0";
 
             HttpResponseMessage response = await httpClient.DeleteAsync($"/api/files/{idToDelete}");
@@ -128,25 +132,29 @@ namespace WebApiTests.FilesTests
             response = await httpClient.GetAsync($"/api/files/{idToDelete}");
 
             TestingUtilities.IsResponseStatus(HttpStatusCode.NotFound, response.StatusCode);
+            //->
 
-            string expectedId = DataModelTestData.TestData.Count.ToString();
+            //<- Creation
+            string expectedId = DataModelTestData.TestDataModels.Count.ToString();
             DataModelDTO testDataModel = new DataModelDTO()
             {
                 Content = "text"
             };
-            StringContent testStringContent = TestingUtilities.CreateDefaultStringContentSerializeObject(testDataModel);
+            string testDataModelJson = JsonSerializer.Serialize(testDataModel).ToLower();
+            StringContent testStringContent = TestingUtilities.CreateDefaultStringContent(testDataModelJson);
 
             response = await httpClient.PostAsync("/api/files", testStringContent);
             string responseContent = await response.Content.ReadAsStringAsync();
 
             TestingUtilities.IsResponseStatus(HttpStatusCode.Created, response.StatusCode);
-            Assert.AreEqual(JsonSerializer.Serialize(testDataModel).ToLower(), responseContent);
+            Assert.AreEqual(testDataModelJson, responseContent);
 
             response = await httpClient.GetAsync($"/api/files/{expectedId}");
             responseContent = await response.Content.ReadAsStringAsync();
 
             TestingUtilities.IsResponseStatus(HttpStatusCode.OK, response.StatusCode);
-            Assert.AreEqual(testDataModel.Content, responseContent);
+            Assert.AreEqual(testDataModelJson, responseContent);
+            //->
         }
     }
 }

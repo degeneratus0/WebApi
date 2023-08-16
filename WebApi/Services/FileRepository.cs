@@ -35,7 +35,7 @@ namespace WebApi.Services
             }
         }
 
-        public string Read(string id)
+        public DataModelDTO Read(string id)
         {
             if (!Directory.Exists(path) || !File.Exists(path + id + ".txt"))
             {
@@ -44,7 +44,7 @@ namespace WebApi.Services
             StreamReader sr = new StreamReader(path + id + ".txt");
             string s = sr.ReadToEnd();
             sr.Close();
-            return s;
+            return new DataModelDTO { Content = s };
         }
 
         public IEnumerable<DataModel> ReadAll()
@@ -59,7 +59,7 @@ namespace WebApi.Services
                 datas.Add(new DataModel()
                 {
                     Id = Path.GetFileNameWithoutExtension(s),
-                    Content = Read(Path.GetFileNameWithoutExtension(s))
+                    Content = Read(Path.GetFileNameWithoutExtension(s)).Content
                 });
             }
             return datas;
