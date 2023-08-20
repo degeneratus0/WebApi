@@ -7,11 +7,15 @@ using WebApi.Services.Interfaces;
 
 namespace WebApi.Services
 {
+    /// <summary>
+    /// Implementation of FileRepository
+    /// </summary>
     internal class FileRepository : IFileRepository<DataModel, DataModelDTO>
     {
-        private static string path = Directory.GetCurrentDirectory() + "\\storage\\";
+        private static readonly string path = Directory.GetCurrentDirectory() + "\\storage\\";
         private static int currentId = 0;
 
+        /// <inheritdoc cref="IFileRepository{DataModel, DataModelDTO}.Set(List{DataModelDTO})"/>
         public void Set(List<DataModelDTO> datas)
         {
             Clear();
@@ -22,6 +26,7 @@ namespace WebApi.Services
             }
         }
 
+        /// <inheritdoc cref="IFileRepository{DataModel, DataModelDTO}.Clear()"/>
         public void Clear()
         {
             if (Directory.Exists(path))
@@ -35,6 +40,7 @@ namespace WebApi.Services
             }
         }
 
+        /// <inheritdoc cref="IFileRepository{DataModel, DataModelDTO}.Read(string)"/>
         public DataModelDTO Read(string id)
         {
             if (!Directory.Exists(path) || !File.Exists(path + id + ".txt"))
@@ -47,6 +53,7 @@ namespace WebApi.Services
             return new DataModelDTO { Content = s };
         }
 
+        /// <inheritdoc cref="IFileRepository{DataModel, DataModelDTO}.ReadAll()"/>
         public IEnumerable<DataModel> ReadAll()
         {
             if (!Directory.Exists(path))
@@ -65,6 +72,7 @@ namespace WebApi.Services
             return datas;
         }
 
+        /// <inheritdoc cref="IFileRepository{DataModel, DataModelDTO}.Add(DataModelDTO)"/>
         public void Add(DataModelDTO data)
         {
             if (!Directory.Exists(path))
@@ -76,6 +84,7 @@ namespace WebApi.Services
             sw.Close();
         }
 
+        /// <inheritdoc cref="IFileRepository{DataModel, DataModelDTO}.Edit(string, DataModelDTO)"/>
         public void Edit(string id, DataModelDTO data)
         {
             StreamWriter sw = new StreamWriter(path + id + ".txt", false, Encoding.Default);
@@ -83,6 +92,7 @@ namespace WebApi.Services
             sw.Close();
         }
 
+        /// <inheritdoc cref="IFileRepository{DataModel, DataModelDTO}.Delete(string)"/>
         public void Delete(string id)
         {
             FileInfo f = new FileInfo(path + id + ".txt");
