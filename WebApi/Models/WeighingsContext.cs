@@ -16,15 +16,6 @@ namespace WebApi.Models
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<Weighing>()
-                .HasOne(s => s.Measure)
-                .WithMany(g => g.Weighings)
-                .HasForeignKey(s => s.IdMeasure)
-                .OnDelete(DeleteBehavior.Cascade);
-            modelBuilder.Entity<Measure>()
-                .HasKey(e => e.Id);
-            modelBuilder.Entity<Weighing>()
-                .HasKey(e => e.Id);
             modelBuilder.Entity<Measure>().HasData(
                 WeighingsTestData.TestMeasures
                 );

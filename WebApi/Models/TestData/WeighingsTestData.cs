@@ -6,14 +6,14 @@ namespace WebApi.Models.TestData
     {
         public static readonly List<Weighing> TestWeighings = new List<Weighing>
         {
-            new Weighing { Id = 1, Item = "Juice", Weight = 200, IdMeasure = 1, TareType = "Box" },
-            new Weighing { Id = 2, Item = "Lemonade", Weight = 1, IdMeasure = 2, TareType = "Bottle" }
+            new Weighing { Id = 1, Item = "Juice", Weight = 200, MeasureId = 1, Container = "Box" },
+            new Weighing { Id = 2, Item = "Lemonade", Weight = 1, MeasureId = 2, Container = "Bottle" }
         };
 
         public static readonly List<Measure> TestMeasures = new List<Measure>
         {
-            new Measure { Id = 1, MeasureName = "g" },
-            new Measure { Id = 2, MeasureName = "kg" }
+            new Measure { Id = 1, Name = "g" },
+            new Measure { Id = 2, Name = "kg" }
         };
     }
 }

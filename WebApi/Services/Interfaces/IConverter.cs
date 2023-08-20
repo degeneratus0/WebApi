@@ -1,9 +1,8 @@
 ﻿namespace WebApi.Services.Interfaces
 {
-    public interface IConverter<T, DTO, DTOid>
+    public interface IConverter<T, DTO>
     {
         DTO AsDTO(T obj);
-        DTOid AsDTOid(T obj);
         T FromDTO(DTO obj);
     }
 }

@@ -4,22 +4,13 @@ using WebApi.Services.Interfaces;
 
 namespace WebApi.Services
 {
-    internal class MeasuresConverter : IConverter<Measure, MeasureDTO, MeasureDTOid>
+    internal class MeasuresConverter : IConverter<Measure, MeasureDTO>
     {
         public MeasureDTO AsDTO(Measure measure)
         {
             return new MeasureDTO
             {
-                MeasureName = measure.MeasureName
-            };
-        }
-
-        public MeasureDTOid AsDTOid(Measure measure)
-        {
-            return new MeasureDTOid
-            {
-                Id = measure.Id,
-                MeasureName = measure.MeasureName
+                Name = measure.Name
             };
         }
 
@@ -27,7 +18,7 @@ namespace WebApi.Services
         {
             return new Measure
             {
-                MeasureName = measure.MeasureName
+                Name = measure.Name
             };
         }
     }

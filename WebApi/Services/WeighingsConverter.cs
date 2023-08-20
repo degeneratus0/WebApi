@@ -6,13 +6,13 @@ using WebApi.Services.Interfaces;
 
 namespace WebApi.Services
 {
-    internal class WeighingsConverter : IConverter<Weighing, WeighingDTO, WeighingDTOid>
+    internal class WeighingsConverter : IConverter<Weighing, WeighingDTO>
     {
-        WeighingsContext context;
+        IRepository<Measure> _measures;
 
-        public WeighingsConverter(WeighingsContext context)
+        public WeighingsConverter(IRepository<Measure> measures)
         {
-            this.context = context;
+            _measures = measures;
         }
 
         public WeighingDTO AsDTO(Weighing weighing)
@@ -21,39 +21,25 @@ namespace WebApi.Services
             {
                 Item = weighing.Item,
                 Weight = weighing.Weight,
-                Measure = weighing.Measure.MeasureName,
-                TareType = weighing.TareType
-            };
-        }
-
-        public WeighingDTOid AsDTOid(Weighing weighing)
-        {
-            return new WeighingDTOid
-            {
-                Id = weighing.Id,
-                Item = weighing.Item,
-                Weight = weighing.Weight,
-                Measure = weighing.Measure.MeasureName,
-                TareType = weighing.TareType
+                MeasureName = weighing.Measure.Name,
+                Container = weighing.Container
             };
         }
 
         public Weighing FromDTO(WeighingDTO weighing)
         {
-            try
+            Measure measure = _measures.Entities.FirstOrDefault(x => x.Name == weighing.MeasureName);
+            if (measure == null)
             {
-                return new Weighing
-                {
-                    Item = weighing.Item,
-                    Weight = weighing.Weight,
-                    Measure = context.Measures.Single(m => m.MeasureName == weighing.Measure),
-                    TareType = weighing.TareType
-                };
+                throw new InvalidOperationException($"Measure with name '{weighing.MeasureName}' was not found");
             }
-            catch (InvalidOperationException e)
+            return new Weighing
             {
-                throw new InvalidOperationException($"Measure with name '{weighing.Measure}' was not found", e);
-            }
+                Item = weighing.Item,
+                Weight = weighing.Weight,
+                Measure = measure,
+                Container = weighing.Container
+            };
         }
     }
 }

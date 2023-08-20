@@ -1,13 +1,14 @@
-﻿using System.Collections.Generic;
+﻿using System.Linq;
+using System.Threading.Tasks;
 
 namespace WebApi.Services.Interfaces
 {
     public interface IRepository<T>
     {
-        T Read(int id);
-        IEnumerable<T> ReadAll();
-        void Add(T obj);
-        void Edit(int id, T obj);
-        void Delete(int id);
+        IQueryable<T> Entities { get; }
+        Task<T> ReadAsync(int id);
+        Task AddAsync(T obj);
+        Task EditAsync(int id, T obj);
+        Task DeleteAsync(int id);
     }
 }

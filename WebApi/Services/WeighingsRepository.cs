@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using WebApi.Models;
 using WebApi.Services.Interfaces;
 
@@ -15,47 +15,46 @@ namespace WebApi.Services
             this.context = context;
         }
 
-        public IEnumerable<Weighing> ReadAll()
+        public IQueryable<Weighing> Entities => context.Weighings.Include(x => x.Measure);
+
+        public async Task<Weighing> ReadAsync(int id)
         {
-            return context.Weighings.Include(x => x.Measure).OrderBy(x => x.Id);
+            return await Entities
+                .FirstOrDefaultAsync(x => x.Id == id);
         }
 
-        public Weighing Read(int id)
+        public async Task AddAsync(Weighing weighing)
         {
-            return context.Weighings
-                .Include(x => x.Measure)
-                .SingleOrDefault(x => x.Id == id);
-        }
-
-        public void Add(Weighing weighing)
-        {
-            context.Add(new Weighing
+            await context.AddAsync(new Weighing
             {
                 Item = weighing.Item,
                 Weight = weighing.Weight,
-                Measure = context.Measures.Single(x => x.Id == weighing.Measure.Id),
-                TareType = weighing.TareType
+                Measure = await context.Measures.FirstAsync(x => x.Id == weighing.Measure.Id),
+                Container = weighing.Container
             });
-            context.SaveChanges();
+            await context.SaveChangesAsync();
         }
 
-        public void Edit(int id, Weighing weighing)
+        public async Task EditAsync(int id, Weighing weighing)
         {
-            Weighing editedWeighing = context.Weighings.Single(x => x.Id == id);
-            editedWeighing.Item = weighing.Item;
-            editedWeighing.Weight = weighing.Weight;
-            editedWeighing.IdMeasure = context.Measures.Single(x => x.MeasureName == weighing.Measure.MeasureName).Id;
-            editedWeighing.TareType = weighing.TareType;
-            context.SaveChanges();
+            Weighing editedWeighing = await ReadAsync(id);
+            if (editedWeighing != null)
+            {
+                editedWeighing.Item = weighing.Item;
+                editedWeighing.Weight = weighing.Weight;
+                editedWeighing.Measure = await context.Measures.FirstAsync(x => x.Name == weighing.Measure.Name);
+                editedWeighing.Container = weighing.Container;
+                await context.SaveChangesAsync();
+            }
         }
 
-        public void Delete(int id)
+        public async Task DeleteAsync(int id)
         {
-            Weighing weighing = context.Weighings.SingleOrDefault(x => x.Id == id);
+            Weighing weighing = await ReadAsync(id);
             if (weighing != null)
             {
                 context.Weighings.Remove(weighing);
-                context.SaveChanges();
+                await context.SaveChangesAsync();
             }
         }
     }

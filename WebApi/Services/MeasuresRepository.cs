@@ -1,5 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using Microsoft.EntityFrameworkCore;
 using System.Linq;
+using System.Threading.Tasks;
 using WebApi.Models;
 using WebApi.Services.Interfaces;
 
@@ -14,39 +15,36 @@ namespace WebApi.Services
             this.context = context;
         }
 
-        public IEnumerable<Measure> ReadAll()
+        public IQueryable<Measure> Entities => context.Measures;
+
+        public async Task<Measure> ReadAsync(int id)
         {
-            return context.Measures;
+            return await Entities.FirstOrDefaultAsync(x => x.Id == id);
         }
 
-        public Measure Read(int id)
+        public async Task AddAsync(Measure measure)
         {
-            return context.Measures.SingleOrDefault(x => x.Id == id);
+            await context.AddAsync(new Measure { Name = measure.Name });
+            await context.SaveChangesAsync();
         }
 
-        public void Add(Measure measure)
+        public async Task EditAsync(int id, Measure measure)
         {
-            context.Add(new Measure { MeasureName = measure.MeasureName });
-            context.SaveChanges();
-        }
-
-        public void Edit(int id, Measure measure)
-        {
-            Measure editedMeasure = context.Measures.SingleOrDefault(x => x.Id == id);
+            Measure editedMeasure = await ReadAsync(id);
             if (editedMeasure != null)
             {
-                editedMeasure.MeasureName = measure.MeasureName;
-                context.SaveChanges();
+                editedMeasure.Name = measure.Name;
+                await context.SaveChangesAsync();
             }
         }
 
-        public void Delete(int id)
+        public async Task DeleteAsync(int id)
         {
-            Measure measure = context.Measures.SingleOrDefault(x => x.Id == id);
+            Measure measure = await ReadAsync(id);
             if (measure != null)
             {
                 context.Measures.Remove(measure);
-                context.SaveChanges();
+                await context.SaveChangesAsync();
             }
         }
     }

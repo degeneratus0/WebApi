@@ -4,9 +4,9 @@
     {
         public int Id { get; set; }
         public string Item { get; set; }
-        public int Weight { get; set; }
-        public int? IdMeasure { get; set; }
+        public float Weight { get; set; }
+        public int MeasureId { get; set; }
         public Measure Measure { get; set; }
-        public string TareType { get; set; }
+        public string Container { get; set; }
     }
 }

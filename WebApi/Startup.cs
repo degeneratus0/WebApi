@@ -29,8 +29,8 @@ namespace WebApi
             services.AddScoped<IRepository<Weighing>, WeighingsRepository>();
             services.AddScoped<IRepository<Measure>, MeasuresRepository>();
 
-            services.AddTransient<IConverter<Weighing, WeighingDTO, WeighingDTOid>, WeighingsConverter>();
-            services.AddTransient<IConverter<Measure, MeasureDTO, MeasureDTOid>, MeasuresConverter>();
+            services.AddTransient<IConverter<Weighing, WeighingDTO>, WeighingsConverter>();
+            services.AddTransient<IConverter<Measure, MeasureDTO>, MeasuresConverter>();
 
             services.AddDbContext<WeighingsContext>(options => options.UseInMemoryDatabase("weighings"));
 
