@@ -27,6 +27,16 @@ namespace WebApiTests.DataModelTests
         }
 
         [Test]
+        public async Task PostDataModelEmptyContent()
+        {
+            StringContent emptyStringContent = TestingUtilities.CreateDefaultStringContentSerializeObject(new DataModel { Id = "_", Content = "" });
+
+            HttpResponseMessage response = await httpClient.PostAsync("/api/DataModel", emptyStringContent);
+
+            TestingUtilities.IsResponseStatus(HttpStatusCode.BadRequest, response.StatusCode);
+        }
+
+        [Test]
         public async Task PostDataModelOnExistingId()
         {
             DataModel testDataModel = new DataModel { Id = "0", Content = "test" };

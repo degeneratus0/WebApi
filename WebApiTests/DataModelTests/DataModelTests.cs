@@ -9,6 +9,50 @@ namespace WebApiTests.DataModelTests
     public class DataModelTests : DataModelTestsBase
     {
         [Test]
+        public async Task SetDataModelsDistinct()
+        {
+            List<DataModel> testDataModels = new List<DataModel>
+            {
+                new DataModel { Id = "1", Content = "test1"},
+                new DataModel { Id = "2", Content = "test2"},
+                new DataModel { Id = "3", Content = "test3"}
+            };
+            string testDataModelsJson = JsonSerializer.Serialize(testDataModels).ToLower();
+            StringContent testDataModelsStringContent = TestingUtilities.CreateDefaultStringContent(testDataModelsJson);
+
+            HttpResponseMessage response = await httpClient.PostAsync("/api/DataModel/set", testDataModelsStringContent);
+
+            TestingUtilities.IsResponseStatus(HttpStatusCode.Created, response.StatusCode);
+
+            response = await httpClient.GetAsync($"/api/DataModel");
+
+            TestingUtilities.IsResponseStatus(HttpStatusCode.OK, response.StatusCode);
+            Assert.AreEqual(testDataModelsJson, await response.Content.ReadAsStringAsync());
+        }
+
+        [Test]
+        public async Task SetDataModelsDuplicates()
+        {
+            List<DataModel> testDataModels = new List<DataModel>
+            {
+                new DataModel { Id = "1", Content = "test1"},
+                new DataModel { Id = "1", Content = "test2"},
+                new DataModel { Id = "1", Content = "test3"}
+            };
+            string testDataModelsDistinctJson = JsonSerializer.Serialize(testDataModels.DistinctBy(x => x.Id).ToList()).ToLower();
+            StringContent testDataModelsStringContent = TestingUtilities.CreateDefaultStringContentSerializeObject(testDataModels);
+
+            HttpResponseMessage response = await httpClient.PostAsync("/api/DataModel/set", testDataModelsStringContent);
+
+            TestingUtilities.IsResponseStatus(HttpStatusCode.Created, response.StatusCode);
+
+            response = await httpClient.GetAsync($"/api/DataModel");
+
+            TestingUtilities.IsResponseStatus(HttpStatusCode.OK, response.StatusCode);
+            Assert.AreEqual(testDataModelsDistinctJson, await response.Content.ReadAsStringAsync());
+        }
+
+        [Test]
         public async Task GetAllDataModels()
         {
             string expectedContent = JsonSerializer.Serialize(DataModelTestData.TestDataModels).ToLower();

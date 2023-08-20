@@ -1,6 +1,5 @@
 using NUnit.Framework;
 using System.Net;
-using System.Net.Http.Json;
 using System.Text.Json;
 using WebApi.Models;
 using WebApi.Models.DTOs;
@@ -11,30 +10,52 @@ namespace WebApiTests.FilesTests
     public class FilesTests : FilesTestsBase
     {
         [Test]
+        public async Task SetFiles()
+        {
+            List<DataModel> expectedDataModels = new List<DataModel>
+            {
+                new DataModel { Id = "0", Content = "test1"},
+                new DataModel { Id = "1", Content = "test2"},
+                new DataModel { Id = "2", Content = "test3"}
+            };
+            string expectedDataModelsJson = JsonSerializer.Serialize(expectedDataModels).ToLower();
+            StringContent expectedDataModelsDtoStringContent = TestingUtilities.CreateDefaultStringContentSerializeObject(
+                expectedDataModels.Select(x => new DataModelDTO { Content = x.Content })
+                );
+
+            HttpResponseMessage response = await httpClient.PostAsync("/api/files/set", expectedDataModelsDtoStringContent);
+
+            TestingUtilities.IsResponseStatus(HttpStatusCode.Created, response.StatusCode);
+
+            response = await httpClient.GetAsync("/api/files");
+            TestingUtilities.IsResponseStatus(HttpStatusCode.OK, response.StatusCode);
+            Assert.AreEqual(
+                expectedDataModelsJson,
+                await response.Content.ReadAsStringAsync()
+                );
+        }
+
+        [Test]
         public async Task GetAllFiles()
         {
-            List<DataModel> expectedDataModels = new List<DataModel>();
-            for (int i = 0; i < DataModelTestData.TestDataModels.Count; i++)
-            {
-                expectedDataModels.Add(new DataModel() { Id = i.ToString(), Content = DataModelTestData.TestDataModels[i].Content });
-            }
+            List<DataModel> expectedDataModels = new List<DataModel>(DataModelTestData.TestDataModels);
 
             HttpResponseMessage response = await httpClient.GetAsync("/api/files");
-            List<DataModel>? responseContent = await response.Content.ReadFromJsonAsync<List<DataModel>>();
 
             TestingUtilities.IsResponseStatus(HttpStatusCode.OK, response.StatusCode);
             Assert.AreEqual(
-                JsonSerializer.Serialize(expectedDataModels),
-                JsonSerializer.Serialize(responseContent)
+                JsonSerializer.Serialize(expectedDataModels).ToLower(),
+                await response.Content.ReadAsStringAsync()
                 );
         }
 
         [TestCaseSource(typeof(DataModelTestData), nameof(DataModelTestData.TestDataModels))]
         public async Task GetFileById(DataModel testDataModel)
         {
+            DataModelDTO expectedDataModel = new DataModelDTO(testDataModel);
+
             HttpResponseMessage response = await httpClient.GetAsync($"/api/files/{testDataModel.Id}");
             string responseContent = await response.Content.ReadAsStringAsync();
-            DataModelDTO expectedDataModel = new DataModelDTO(testDataModel);
 
             TestingUtilities.IsResponseStatus(HttpStatusCode.OK, response.StatusCode);
             Assert.AreEqual(JsonSerializer.Serialize(expectedDataModel).ToLower(), responseContent);

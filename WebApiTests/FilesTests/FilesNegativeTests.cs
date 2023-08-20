@@ -6,7 +6,6 @@ namespace WebApiTests.FilesTests
 {
     public class FilesNegativeTests : FilesTestsBase
     {
-
         [Test]
         public async Task GetFileByNonExistentId()
         {
